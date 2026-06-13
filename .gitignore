@@ -1,0 +1,142 @@
+# =========================
+
+# Python
+
+# =========================
+
+**pycache**/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments
+
+venv/
+.venv/
+env/
+
+# AI Engine Python Environment
+
+ai-engine/Lib/
+ai-engine/Scripts/
+ai-engine/Include/
+ai-engine/venv/
+
+# =========================
+
+# AI Models
+
+# =========================
+
+*.pt
+*.pth
+*.onnx
+*.engine
+*.weights
+
+# =========================
+
+# Generated Files
+
+# =========================
+
+uploads/
+outputs/
+downloads/
+
+ai-engine/uploads/
+ai-engine/outputs/
+ai-engine/Downloads/
+
+# Reports
+
+*.pdf
+
+# =========================
+
+# Node / Frontend / Backend
+
+# =========================
+
+node_modules/
+.next/
+dist/
+build/
+coverage/
+
+backend/node_modules/
+backend/dist/
+
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# =========================
+
+# Environment Variables
+
+# =========================
+
+.env
+.env.local
+.env.development
+.env.production
+
+backend/.env
+frontend/.env
+
+# =========================
+
+# IDE
+
+# =========================
+
+.vscode/
+.idea/
+
+# =========================
+
+# OS Files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =========================
+
+# Logs
+
+# =========================
+
+*.log
+logs/
+
+# =========================
+
+# Database
+
+# =========================
+
+*.sqlite
+*.db
+
+# =========================
+
+# Git
+
+# =========================
+
+.git
+# Test Media
+*.mp4
+*.mp3
+*.wav
+
+# Python Config
+pyvenv.cfg
+ai-engine/pyvenv.cfg
+
+# Data
+ai-engine/data/

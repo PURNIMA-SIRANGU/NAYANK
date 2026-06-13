@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CITIZEN
+  OFFICER
+  SUPERVISOR
+}
+
+enum EvidenceType {
+  VIDEO
+  AUDIO
+  IMAGE
+  DOCUMENT
+}
+
+enum CaseStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+
+  createdAt DateTime @default(now())
+
+  cases     Case[]
+  audits    AuditLog[]
+}
+
+model Case {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  status      CaseStatus  @default(OPEN)
+
+  createdAt   DateTime @default(now())
+
+  createdById String
+  createdBy   User @relation(fields: [createdById], references: [id])
+
+  evidences   Evidence[]
+  interviews  Interview[]
+}
+
+model Evidence {
+  id          String @id @default(uuid())
+
+  type        EvidenceType
+  fileUrl     String
+
+  summary     String?
+
+  createdAt   DateTime @default(now())
+
+  caseId      String
+  case        Case @relation(fields: [caseId], references: [id])
+
+  videoAnalysis VideoAnalysis?
+}
+
+model VideoAnalysis {
+  id          String @id @default(uuid())
+
+  persons     Int?
+  vehicles    Int?
+
+  plates      String?
+
+  summary     String?
+
+  evidenceId  String @unique
+  evidence    Evidence @relation(fields: [evidenceId], references: [id])
+}
+
+model Interview {
+  id          String @id @default(uuid())
+
+  transcript  String?
+  summary     String?
+
+  language    String?
+
+  createdAt   DateTime @default(now())
+
+  caseId      String
+  case        Case @relation(fields: [caseId], references: [id])
+
+  behavior    BehavioralAnalysis?
+}
+
+model BehavioralAnalysis {
+  id              String @id @default(uuid())
+
+  pauseDuration   Float?
+  speechRate      Float?
+
+  eyeDirection    String?
+  headDirection   String?
+
+  interviewId     String @unique
+  interview       Interview @relation(fields: [interviewId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  caseId    String?
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User @relation(fields: [userId], references: [id])
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+
+  type      String
+  severity  String   @default("HIGH")
+
+  message   String
+
+  isRead    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+
+  caseId    String
+}
