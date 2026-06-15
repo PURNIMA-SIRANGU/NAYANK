@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 export default function About() {
   const cards = [
     {
-      title: "NETHR◉I",
+      title: "NETHR👁I",
       desc: "Visual Intelligence Engine",
     },
     {
-      title: "SA⌇⌇⌇KET",
+      title: "SAlIlKET",
       desc: "Audio Intelligence Engine",
     },
     {
