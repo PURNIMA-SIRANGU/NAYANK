@@ -1,3 +1,4 @@
+import "@fontsource/space-grotesk";
 import "./globals.css";
 
 export const metadata = {
@@ -12,7 +13,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body
+        style={{
+          fontFamily: "Space Grotesk, sans-serif",
+          background: "#040B14",
+          color: "#FFFFFF",
+          margin: 0,
+        }}
+      >
+        {children}
+      </body>
     </html>
   );
 }

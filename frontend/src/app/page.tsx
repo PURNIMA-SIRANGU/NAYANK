@@ -1,3 +1,5 @@
+import LandingPage from "@/modules/landing/LandingPage";
+
 export default function HomePage() {
-  return <h1>NAYANK</h1>;
+  return <LandingPage />;
 }
