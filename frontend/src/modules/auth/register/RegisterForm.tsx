@@ -2,30 +2,64 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+
 import { registerUser } from "@/services/auth.services";
 
 export default function RegisterForm() {
   const router = useRouter();
 
+  const [loading, setLoading] =
+    useState(false);
+
   const [form, setForm] = useState({
     name: "",
     email: "",
-    password: "",
-    role: "CITIZEN",
-  });
+    mobile: "",
 
-  const [loading, setLoading] =
-    useState(false);
+    addressLine1: "",
+    addressLine2: "",
+
+    village: "",
+    ward: "",
+
+    city: "",
+    district: "Eluru",
+
+    state: "Andhra Pradesh",
+
+    pincode: "",
+
+    governmentIdType: "AADHAAR",
+
+    governmentIdNumber: "",
+
+    password: "",
+    confirmPassword: "",
+  });
 
   const handleRegister = async (
     e: React.FormEvent
   ) => {
     e.preventDefault();
 
+    if (
+      form.password !==
+      form.confirmPassword
+    ) {
+      alert(
+        "Passwords do not match"
+      );
+      return;
+    }
+
     try {
       setLoading(true);
 
-      await registerUser(form);
+      await registerUser({
+        ...form,
+        role: "CITIZEN",
+      });
 
       alert(
         "Registration Successful"
@@ -33,146 +67,438 @@ export default function RegisterForm() {
 
       router.push("/login");
     } catch (error: any) {
+      console.log(error);
+
       alert(
-        error?.response?.data?.message ||
-          "Registration Failed"
+        JSON.stringify(
+          error?.response?.data ||
+            error?.message ||
+            error
+        )
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: "100%",
+
+    height: "60px",
+
+    padding: "0 18px",
+
+    borderRadius: "18px",
+
+    border:
+      "1px solid rgba(255,255,255,.08)",
+
+    background:
+      "rgba(255,255,255,.04)",
+
+    color: "white",
+
+    outline: "none",
+  };
+
   return (
     <main
       style={{
         minHeight: "100vh",
+
         display: "flex",
+
         justifyContent: "center",
+
         alignItems: "center",
-        background: "#040B14",
+
+        padding: "40px",
+
+        background: `
+          radial-gradient(
+            circle at top left,
+            rgba(37,99,235,.35),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(96,165,250,.15),
+            transparent 40%
+          ),
+          #040B14
+        `,
       }}
     >
-      <form
+      <motion.form
+        initial={{
+          opacity: 0,
+          y: 40,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        transition={{
+          duration: 0.7,
+        }}
         onSubmit={handleRegister}
         style={{
-          width: "500px",
-          background: "#091423",
-          padding: "40px",
-          borderRadius: "24px",
+          width: "1000px",
+
+          padding: "42px",
+
+          borderRadius: "36px",
+
+          backdropFilter:
+            "blur(32px)",
+
+          background:
+            "rgba(255,255,255,.05)",
+
           border:
-            "1px solid rgba(37,99,235,.3)",
+            "1px solid rgba(255,255,255,.08)",
+
+          boxShadow:
+            "0 40px 120px rgba(0,0,0,.45)",
         }}
       >
-        <h1
+        <div
           style={{
-            marginBottom: "30px",
+            marginBottom: "35px",
           }}
         >
-          Register
-        </h1>
+          <h1
+            style={{
+              fontSize: "3rem",
 
-        <input
-          placeholder="Name"
-          value={form.name}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              name: e.target.value,
-            })
-          }
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
-          }}
-        />
+              marginBottom: "8px",
 
-        <input
-          placeholder="Email"
-          value={form.email}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              email: e.target.value,
-            })
-          }
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
-          }}
-        />
+              fontWeight: 800,
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              password: e.target.value,
-            })
-          }
-          style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
-          }}
-        />
+              background:
+                "linear-gradient(135deg,#93C5FD,#60A5FA,#2563EB)",
 
-        <select
-          value={form.role}
-          onChange={(e) =>
-            setForm({
-              ...form,
-              role: e.target.value,
-            })
-          }
+              WebkitBackgroundClip:
+                "text",
+
+              WebkitTextFillColor:
+                "transparent",
+
+              fontFamily:
+                "Space Grotesk, sans-serif",
+            }}
+          >
+            NAYANK
+          </h1>
+
+          <p
+            style={{
+              color: "#CBD5E1",
+
+              lineHeight: 1.7,
+            }}
+          >
+            Citizen Registration
+            Portal
+
+            <br />
+
+            Register securely to
+            report incidents,
+            track complaints and
+            upload evidence.
+          </p>
+        </div>
+
+        <div
           style={{
-            width: "100%",
-            padding: "14px",
-            marginBottom: "20px",
+            display: "grid",
+
+            gridTemplateColumns:
+              "1fr 1fr",
+
+            gap: "18px",
           }}
         >
-          <option value="CITIZEN">
-            Citizen
-          </option>
+          <input
+            placeholder="Full Name"
+            style={inputStyle}
+            value={form.name}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                name:
+                  e.target.value,
+              })
+            }
+          />
 
-          <option value="OFFICER">
-            Officer
-          </option>
+          <input
+            placeholder="Email"
+            style={inputStyle}
+            value={form.email}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                email:
+                  e.target.value,
+              })
+            }
+          />
 
-          <option value="INVESTIGATOR">
-            Investigator
-          </option>
+          <input
+            placeholder="Mobile Number"
+            style={inputStyle}
+            value={form.mobile}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                mobile:
+                  e.target.value,
+              })
+            }
+          />
 
-          <option value="SUPERVISOR">
-            Supervisor
-          </option>
+          <input
+            placeholder="Address Line 1"
+            style={inputStyle}
+            value={
+              form.addressLine1
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                addressLine1:
+                  e.target.value,
+              })
+            }
+          />
 
-          <option value="ADMIN">
-            Administrator
-          </option>
-        </select>
+          <input
+            placeholder="Address Line 2"
+            style={inputStyle}
+            value={
+              form.addressLine2
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                addressLine2:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="Village"
+            style={inputStyle}
+            value={form.village}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                village:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="Ward"
+            style={inputStyle}
+            value={form.ward}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                ward:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="City"
+            style={inputStyle}
+            value={form.city}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                city:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="District"
+            style={inputStyle}
+            value={form.district}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                district:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="State"
+            style={inputStyle}
+            value={form.state}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                state:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            placeholder="Pincode"
+            style={inputStyle}
+            value={form.pincode}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                pincode:
+                  e.target.value,
+              })
+            }
+          />
+
+          <select
+            style={inputStyle}
+            value={
+              form.governmentIdType
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                governmentIdType:
+                  e.target.value,
+              })
+            }
+          >
+            <option value="AADHAAR">
+              Aadhaar
+            </option>
+
+            <option value="VOTER_ID">
+              Voter ID
+            </option>
+
+            <option value="DRIVING_LICENSE">
+              Driving License
+            </option>
+
+            <option value="RATION_CARD">
+              Ration Card
+            </option>
+
+            <option value="OTHER">
+              Other
+            </option>
+          </select>
+
+          <input
+            placeholder="Government ID Number"
+            style={inputStyle}
+            value={
+              form.governmentIdNumber
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                governmentIdNumber:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            style={inputStyle}
+            value={form.password}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                password:
+                  e.target.value,
+              })
+            }
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            style={inputStyle}
+            value={
+              form.confirmPassword
+            }
+            onChange={(e) =>
+              setForm({
+                ...form,
+                confirmPassword:
+                  e.target.value,
+              })
+            }
+          />
+        </div>
 
         <button
           type="submit"
           disabled={loading}
           style={{
             width: "100%",
-            padding: "14px",
-            borderRadius: "999px",
+
+            height: "60px",
+
+            marginTop: "30px",
+
+            borderRadius: "18px",
+
             border: "none",
+
             background:
-              "linear-gradient(90deg,#2563EB,#60A5FA)",
+              "linear-gradient(135deg,#2563EB,#60A5FA)",
+
             color: "white",
+
+            fontWeight: 700,
+
+            cursor: "pointer",
           }}
         >
           {loading
             ? "Creating Account..."
-            : "Register"}
+            : "Create Citizen Account"}
         </button>
-      </form>
+
+        <p
+          style={{
+            textAlign: "center",
+
+            marginTop: "20px",
+
+            color: "#94A3B8",
+          }}
+        >
+          Already have an account?{" "}
+          <span
+            onClick={() =>
+              router.push("/login")
+            }
+            style={{
+              color: "#60A5FA",
+              cursor: "pointer",
+            }}
+          >
+            Login
+          </span>
+        </p>
+      </motion.form>
     </main>
   );
 }

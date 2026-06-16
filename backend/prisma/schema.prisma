@@ -10,7 +10,17 @@ datasource db {
 enum Role {
   CITIZEN
   OFFICER
+  INVESTIGATOR
   SUPERVISOR
+  ADMIN
+}
+
+enum GovernmentIdType {
+  AADHAAR
+  VOTER_ID
+  DRIVING_LICENSE
+  RATION_CARD
+  OTHER
 }
 
 enum EvidenceType {
@@ -32,109 +42,146 @@ model User {
   email     String   @unique
   password  String
   role      Role
-
   createdAt DateTime @default(now())
 
-  cases     Case[]
-  audits    AuditLog[]
+  citizenProfile CitizenProfile?
+
+  audits AuditLog[]
+  cases  Case[]
+}
+
+model CitizenProfile {
+  id String @id @default(uuid())
+
+  mobile String
+
+  addressLine1 String
+  addressLine2 String?
+
+  village String?
+  ward    String?
+
+  city     String?
+  district String?
+  state    String?
+
+  pincode String?
+
+  governmentIdType   GovernmentIdType
+  governmentIdNumber String
+
+  isVerified Boolean @default(false)
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 model Case {
-  id          String      @id @default(uuid())
+  id String @id @default(uuid())
+
   title       String
   description String
-  status      CaseStatus  @default(OPEN)
 
-  createdAt   DateTime @default(now())
+  status CaseStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
 
   createdById String
-  createdBy   User @relation(fields: [createdById], references: [id])
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
-  evidences   Evidence[]
-  interviews  Interview[]
+  evidences  Evidence[]
+  interviews Interview[]
 }
 
 model Evidence {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  type        EvidenceType
-  fileUrl     String
+  type EvidenceType
 
-  summary     String?
+  fileUrl String
 
-  createdAt   DateTime @default(now())
+  summary String?
 
-  caseId      String
-  case        Case @relation(fields: [caseId], references: [id])
+  createdAt DateTime @default(now())
+
+  caseId String
+  case   Case   @relation(fields: [caseId], references: [id])
 
   videoAnalysis VideoAnalysis?
 }
 
 model VideoAnalysis {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  persons     Int?
-  vehicles    Int?
+  persons  Int?
+  vehicles Int?
 
-  plates      String?
+  plates String?
 
-  summary     String?
+  summary String?
 
-  evidenceId  String @unique
-  evidence    Evidence @relation(fields: [evidenceId], references: [id])
+  evidenceId String   @unique
+  evidence   Evidence @relation(fields: [evidenceId], references: [id])
 }
 
 model Interview {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  transcript  String?
-  summary     String?
+  transcript String?
+  summary    String?
 
-  language    String?
+  language String?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  caseId      String
-  case        Case @relation(fields: [caseId], references: [id])
+  caseId String
+  case   Case   @relation(fields: [caseId], references: [id])
 
-  behavior    BehavioralAnalysis?
+  behavior BehavioralAnalysis?
 }
 
 model BehavioralAnalysis {
-  id              String @id @default(uuid())
+  id String @id @default(uuid())
 
-  pauseDuration   Float?
-  speechRate      Float?
+  pauseDuration Float?
+  speechRate    Float?
 
-  eyeDirection    String?
-  headDirection   String?
+  eyeDirection  String?
+  headDirection String?
 
-  interviewId     String @unique
-  interview       Interview @relation(fields: [interviewId], references: [id])
+  interviewId String    @unique
+  interview   Interview @relation(fields: [interviewId], references: [id])
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  action    String
-  details   String?
-  caseId    String?
+  id String @id @default(uuid())
+
+  action String
+
+  details String?
+
+  caseId String?
+
   createdAt DateTime @default(now())
 
-  userId    String
-  user      User @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Alert {
-  id        String   @id @default(uuid())
+  id String @id @default(uuid())
 
-  type      String
-  severity  String   @default("HIGH")
+  type String
 
-  message   String
+  severity String @default("HIGH")
 
-  isRead    Boolean  @default(false)
+  message String
+
+  isRead Boolean @default(false)
 
   createdAt DateTime @default(now())
 
-  caseId    String
+  caseId String
 }

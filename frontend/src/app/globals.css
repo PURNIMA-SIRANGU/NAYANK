@@ -1,6 +1,19 @@
 @import "@fontsource/inter";
 @import "@fontsource/space-grotesk";
 
+
+body {
+  font-family: "Inter Variable", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Grotesk", sans-serif;
+}
 :root {
   --bg-primary: #040b14;
   --bg-secondary: #091423;

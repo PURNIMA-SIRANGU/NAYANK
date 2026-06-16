@@ -7,11 +7,17 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: any) {
+    console.log('REGISTER HIT');
+    console.log(body);
+
     return this.authService.register(body);
   }
 
   @Post('login')
   async login(@Body() body: any) {
+    console.log('LOGIN HIT');
+    console.log(body);
+
     return this.authService.login(body);
   }
 }

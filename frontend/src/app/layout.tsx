@@ -15,7 +15,6 @@ export default function RootLayout({
     <html lang="en">
       <body
         style={{
-          fontFamily: "Space Grotesk, sans-serif",
           background: "#040B14",
           color: "#FFFFFF",
           margin: 0,

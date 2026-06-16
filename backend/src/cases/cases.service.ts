@@ -8,6 +8,18 @@ export class CasesService {
   private prisma: PrismaService,
   private auditService: AuditService,
 ) {}
+async findByUser(
+  userId: string,
+) {
+  return this.prisma.case.findMany({
+    where: {
+      createdById: userId,
+    },
+    include: {
+      evidences: true,
+    },
+  });
+}
 async create(data: any) {
 
   const newCase =

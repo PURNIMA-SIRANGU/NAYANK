@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const roles = [
   {
@@ -10,10 +11,6 @@ const roles = [
   {
     title: "Officer",
     desc: "Manage investigations and reports.",
-  },
-  {
-    title: "Investigator",
-    desc: "Analyze evidence using AI modules.",
   },
   {
     title: "Supervisor",
@@ -26,18 +23,28 @@ const roles = [
 ];
 
 export default function RolesSection() {
+  const router = useRouter();
+
   return (
     <section
-    id="roles"
+      id="roles"
       style={{
         padding: "140px 8%",
         background: "#091423",
       }}
     >
       <motion.h1
-        initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false }}
+        initial={{
+          opacity: 0,
+          y: 60,
+        }}
+        whileInView={{
+          opacity: 1,
+          y: 0,
+        }}
+        viewport={{
+          once: false,
+        }}
         style={{
           fontSize: "4rem",
           marginBottom: "20px",
@@ -54,9 +61,11 @@ export default function RolesSection() {
           fontSize: "1.1rem",
         }}
       >
-        Every stakeholder in the investigation
-        ecosystem receives tools and intelligence
-        tailored to their responsibilities.
+        Every stakeholder in the
+        investigation ecosystem
+        receives tools and
+        intelligence tailored to
+        their responsibilities.
       </p>
 
       <div
@@ -67,66 +76,97 @@ export default function RolesSection() {
           gap: "30px",
         }}
       >
-        {roles.map((role, index) => (
-          <motion.div
-            key={role.title}
-            initial={{
-              opacity: 0,
-              y: 80,
-            }}
-            whileInView={{
-              opacity: 1,
-              y: 0,
-            }}
-            viewport={{
-              once: false,
-            }}
-            transition={{
-              delay: index * 0.1,
-            }}
-            whileHover={{
-              y: -12,
-              scale: 1.03,
-            }}
-            style={{
-              background:
-                "linear-gradient(145deg,#091423,#10203A)",
-              border:
-                "1px solid rgba(37,99,235,.35)",
-              borderRadius: "24px",
-              padding: "35px",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              style={{
-                color: "#60A5FA",
-                fontSize: "2rem",
-                marginBottom: "20px",
+        {roles.map(
+          (role, index) => (
+            <motion.div
+              key={role.title}
+              initial={{
+                opacity: 0,
+                y: 80,
               }}
-            >
-              ◉
-            </div>
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: false,
+              }}
+              transition={{
+                delay:
+                  index * 0.1,
+              }}
+              whileHover={{
+                y: -12,
+                scale: 1.03,
+              }}
+              onClick={() =>
+                router.push(
+                  "/login"
+                )
+              }
+              style={{
+                background:
+                  "linear-gradient(145deg,#091423,#10203A)",
 
-            <h3
-              style={{
-                fontSize: "1.5rem",
-                marginBottom: "15px",
-              }}
-            >
-              {role.title}
-            </h3>
+                border:
+                  "1px solid rgba(37,99,235,.35)",
 
-            <p
-              style={{
-                color: "#94A3B8",
-                lineHeight: 1.8,
+                borderRadius:
+                  "24px",
+
+                padding: "35px",
+
+                cursor:
+                  "pointer",
+
+                transition:
+                  "all .3s ease",
+
+                boxShadow:
+                  "0 10px 40px rgba(0,0,0,.25)",
               }}
             >
-              {role.desc}
-            </p>
-          </motion.div>
-        ))}
+              <div
+                style={{
+                  color:
+                    "#60A5FA",
+
+                  fontSize:
+                    "2rem",
+
+                  marginBottom:
+                    "20px",
+                }}
+              >
+                ❯❯
+              </div>
+
+              <h3
+                style={{
+                  fontSize:
+                    "1.5rem",
+
+                  marginBottom:
+                    "15px",
+                }}
+              >
+                {role.title}
+              </h3>
+
+              <p
+                style={{
+                  color:
+                    "#94A3B8",
+
+                  lineHeight:
+                    1.8,
+                }}
+              >
+                {role.desc}
+              </p>
+            </motion.div>
+          )
+        )}
       </div>
     </section>
   );

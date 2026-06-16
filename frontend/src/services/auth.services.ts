@@ -1,34 +1,28 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:3001/auth";
+import api from "@/lib/axios";
 
 export const loginUser = async (
   email: string,
   password: string
 ) => {
-  const response = await axios.post(
-    `${API_URL}/login`,
-    {
-      email,
-      password,
-    }
-  );
+  const response =
+    await api.post(
+      "/auth/login",
+      {
+        email,
+        password,
+      }
+    );
 
   return response.data;
 };
 
-export const registerUser = async (
-  data: {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-  }
-) => {
-  const response = await axios.post(
-    `${API_URL}/register`,
-    data
-  );
+export const registerUser =
+  async (data: any) => {
+    const response =
+      await api.post(
+        "/auth/register",
+        data
+      );
 
-  return response.data;
-};
+    return response.data;
+  };

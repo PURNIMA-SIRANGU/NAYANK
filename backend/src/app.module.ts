@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CasesModule } from './cases/cases.module';
@@ -8,7 +9,7 @@ import { EvidenceModule } from './evidence/evidence.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { AuditModule } from './audit/audit.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { UploadsModule } from './uploads/uploads.module';
+
 import { AiModule } from './ai/ai.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
@@ -19,7 +20,24 @@ import { SupervisorModule } from './supervisor/supervisor.module';
 import { RecommendationsModule } from './recommendations/recommendations.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, CasesModule, EvidenceModule, InterviewsModule, AuditModule, PrismaModule, UploadsModule, AiModule, AnalyticsModule, ReportsModule, RiskScoreModule, AlertsModule, TimelineModule, SupervisorModule, RecommendationsModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    CasesModule,
+    EvidenceModule,
+    InterviewsModule,
+    AuditModule,
+    PrismaModule,
+
+    AiModule,
+    AnalyticsModule,
+    ReportsModule,
+    RiskScoreModule,
+    AlertsModule,
+    TimelineModule,
+    SupervisorModule,
+    RecommendationsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

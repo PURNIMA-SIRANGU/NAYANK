@@ -25,7 +25,15 @@ export class CasesController {
   async findAll() {
     return this.casesService.findAll();
   }
-
+@Get('user/:userId')
+findByUser(
+  @Param('userId')
+  userId: string,
+) {
+  return this.casesService.findByUser(
+    userId,
+  );
+}
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.casesService.findOne(id);
