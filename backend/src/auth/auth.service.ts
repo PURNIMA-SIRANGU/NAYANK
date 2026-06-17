@@ -6,6 +6,8 @@ import {
 
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { MailService } from '../mail/mail.service';
+
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -13,9 +15,164 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
-  async register(data: any) {
+  async sendOtp(
+    email: string,
+  ) {
+    const existingUser =
+      await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+    if (existingUser) {
+      throw new BadRequestException(
+        'User already exists with this email',
+      );
+    }
+
+    const otp = Math.floor(
+      100000 +
+        Math.random() * 900000,
+    ).toString();
+
+    await this.prisma.emailOtp.deleteMany({
+      where: {
+        email,
+      },
+    });
+
+    await this.prisma.emailOtp.create({
+      data: {
+        email,
+        otp,
+
+        verified: false,
+
+        isUsed: false,
+
+        attempts: 0,
+
+        expiresAt: new Date(
+          Date.now() +
+            5 * 60 * 1000,
+        ),
+      },
+    });
+
+    await this.mailService.sendOtp(
+      email,
+      otp,
+    );
+
+    return {
+      success: true,
+      message:
+        'OTP sent successfully',
+    };
+  }
+
+  async verifyOtp(
+    email: string,
+    otp: string,
+  ) {
+    const record =
+      await this.prisma.emailOtp.findFirst({
+        where: {
+          email,
+        },
+
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+    if (!record) {
+      throw new BadRequestException(
+        'OTP not found',
+      );
+    }
+
+    if (record.isUsed) {
+      throw new BadRequestException(
+        'OTP already used',
+      );
+    }
+
+    if (
+      new Date() >
+      record.expiresAt
+    ) {
+      throw new BadRequestException(
+        'OTP expired',
+      );
+    }
+
+    if (record.attempts >= 5) {
+      throw new BadRequestException(
+        'Too many invalid attempts',
+      );
+    }
+
+    if (record.otp !== otp) {
+      await this.prisma.emailOtp.update({
+        where: {
+          id: record.id,
+        },
+
+        data: {
+          attempts:
+            record.attempts + 1,
+        },
+      });
+
+      throw new BadRequestException(
+        'Invalid OTP',
+      );
+    }
+
+    await this.prisma.emailOtp.update({
+      where: {
+        id: record.id,
+      },
+
+      data: {
+        verified: true,
+      },
+    });
+
+    return {
+      success: true,
+      verified: true,
+      message:
+        'OTP verified successfully',
+    };
+  }
+    async register(data: any) {
+    const verifiedOtp =
+      await this.prisma.emailOtp.findFirst({
+        where: {
+          email: data.email,
+
+          verified: true,
+
+          isUsed: false,
+        },
+
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+    if (!verifiedOtp) {
+      throw new BadRequestException(
+        'Please verify your email OTP first',
+      );
+    }
+
     const existingUser =
       await this.prisma.user.findUnique({
         where: {
@@ -39,7 +196,9 @@ export class AuthService {
       await this.prisma.user.create({
         data: {
           name: data.name,
+
           email: data.email,
+
           password:
             hashedPassword,
 
@@ -88,12 +247,24 @@ export class AuthService {
         },
       });
 
+    await this.prisma.emailOtp.update({
+      where: {
+        id: verifiedOtp.id,
+      },
+
+      data: {
+        isUsed: true,
+      },
+    });
+
     const {
       password,
       ...safeUser
     } = user;
 
     return {
+      success: true,
+
       message:
         'User registered successfully',
 
@@ -134,7 +305,9 @@ export class AuthService {
     const token =
       this.jwtService.sign({
         sub: user.id,
+
         email: user.email,
+
         role: user.role,
       });
 
@@ -143,8 +316,11 @@ export class AuthService {
 
       user: {
         id: user.id,
+
         name: user.name,
+
         email: user.email,
+
         role: user.role,
 
         citizenProfile:
@@ -191,6 +367,7 @@ export class AuthService {
       where: {
         id: user.id,
       },
+
       data: {
         password:
           hashedPassword,
@@ -198,6 +375,8 @@ export class AuthService {
     });
 
     return {
+      success: true,
+
       message:
         'Password changed successfully',
     };

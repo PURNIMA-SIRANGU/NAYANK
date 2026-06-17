@@ -27,6 +27,36 @@ export const registerUser =
     return response.data;
   };
 
+export const sendOtp =
+  async (email: string) => {
+    const response =
+      await api.post(
+        "/auth/send-otp",
+        {
+          email,
+        }
+      );
+
+    return response.data;
+  };
+
+export const verifyOtp =
+  async (
+    email: string,
+    otp: string
+  ) => {
+    const response =
+      await api.post(
+        "/auth/verify-otp",
+        {
+          email,
+          otp,
+        }
+      );
+
+    return response.data;
+  };
+
 export const changePassword =
   async (
     userId: string,

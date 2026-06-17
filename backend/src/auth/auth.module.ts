@@ -3,11 +3,15 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+
 import { PrismaModule } from '../prisma/prisma.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     PrismaModule,
+    MailModule,
+
     JwtModule.register({
       secret: 'netrai-secret-key',
       signOptions: {
@@ -15,7 +19,11 @@ import { PrismaModule } from '../prisma/prisma.module';
       },
     }),
   ],
+
   controllers: [AuthController],
+
   providers: [AuthService],
+
+  exports: [AuthService],
 })
 export class AuthModule {}

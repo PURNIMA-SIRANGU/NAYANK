@@ -7,11 +7,127 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String          @unique
+  password       String
+  role           Role
+  createdAt      DateTime        @default(now())
+  audits         AuditLog[]
+  cases          Case[]
+  citizenProfile CitizenProfile?
+}
+
+model CitizenProfile {
+  id                 String           @id @default(uuid())
+  mobile             String
+  addressLine1       String
+  addressLine2       String?
+  village            String?
+  ward               String?
+  city               String?
+  district           String?
+  state              String?
+  pincode            String?
+  governmentIdType   GovernmentIdType
+  governmentIdNumber String
+  isVerified         Boolean          @default(false)
+  userId             String           @unique
+  createdAt          DateTime         @default(now())
+  user               User             @relation(fields: [userId], references: [id])
+}
+
+model Case {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  status      CaseStatus  @default(OPEN)
+  createdAt   DateTime    @default(now())
+  createdById String
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  evidences   Evidence[]
+  interviews  Interview[]
+}
+
+model Evidence {
+  id            String         @id @default(uuid())
+  type          EvidenceType
+  fileUrl       String
+  summary       String?
+  createdAt     DateTime       @default(now())
+  caseId        String
+  case          Case           @relation(fields: [caseId], references: [id])
+  videoAnalysis VideoAnalysis?
+}
+
+model VideoAnalysis {
+  id         String   @id @default(uuid())
+  persons    Int?
+  vehicles   Int?
+  plates     String?
+  summary    String?
+  evidenceId String   @unique
+  evidence   Evidence @relation(fields: [evidenceId], references: [id])
+}
+
+model Interview {
+  id         String              @id @default(uuid())
+  transcript String?
+  summary    String?
+  language   String?
+  createdAt  DateTime            @default(now())
+  caseId     String
+  behavior   BehavioralAnalysis?
+  case       Case                @relation(fields: [caseId], references: [id])
+}
+
+model BehavioralAnalysis {
+  id            String    @id @default(uuid())
+  pauseDuration Float?
+  speechRate    Float?
+  eyeDirection  String?
+  headDirection String?
+  interviewId   String    @unique
+  interview     Interview @relation(fields: [interviewId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  createdAt DateTime @default(now())
+  userId    String
+  caseId    String?
+  details   String?
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Alert {
+  id        String   @id @default(uuid())
+  type      String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  caseId    String
+  severity  String   @default("HIGH")
+}
+
+model EmailOtp {
+  id        String   @id @default(uuid())
+  email     String
+  otp       String
+  verified  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  attempts  Int      @default(0)
+  isUsed    Boolean  @default(false)
+}
+
 enum Role {
   CITIZEN
   OFFICER
-  INVESTIGATOR
   SUPERVISOR
+  INVESTIGATOR
   ADMIN
 }
 
@@ -34,154 +150,4 @@ enum CaseStatus {
   OPEN
   IN_PROGRESS
   CLOSED
-}
-
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
-
-  citizenProfile CitizenProfile?
-
-  audits AuditLog[]
-  cases  Case[]
-}
-
-model CitizenProfile {
-  id String @id @default(uuid())
-
-  mobile String
-
-  addressLine1 String
-  addressLine2 String?
-
-  village String?
-  ward    String?
-
-  city     String?
-  district String?
-  state    String?
-
-  pincode String?
-
-  governmentIdType   GovernmentIdType
-  governmentIdNumber String
-
-  isVerified Boolean @default(false)
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
-  createdAt DateTime @default(now())
-}
-
-model Case {
-  id String @id @default(uuid())
-
-  title       String
-  description String
-
-  status CaseStatus @default(OPEN)
-
-  createdAt DateTime @default(now())
-
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
-
-  evidences  Evidence[]
-  interviews Interview[]
-}
-
-model Evidence {
-  id String @id @default(uuid())
-
-  type EvidenceType
-
-  fileUrl String
-
-  summary String?
-
-  createdAt DateTime @default(now())
-
-  caseId String
-  case   Case   @relation(fields: [caseId], references: [id])
-
-  videoAnalysis VideoAnalysis?
-}
-
-model VideoAnalysis {
-  id String @id @default(uuid())
-
-  persons  Int?
-  vehicles Int?
-
-  plates String?
-
-  summary String?
-
-  evidenceId String   @unique
-  evidence   Evidence @relation(fields: [evidenceId], references: [id])
-}
-
-model Interview {
-  id String @id @default(uuid())
-
-  transcript String?
-  summary    String?
-
-  language String?
-
-  createdAt DateTime @default(now())
-
-  caseId String
-  case   Case   @relation(fields: [caseId], references: [id])
-
-  behavior BehavioralAnalysis?
-}
-
-model BehavioralAnalysis {
-  id String @id @default(uuid())
-
-  pauseDuration Float?
-  speechRate    Float?
-
-  eyeDirection  String?
-  headDirection String?
-
-  interviewId String    @unique
-  interview   Interview @relation(fields: [interviewId], references: [id])
-}
-
-model AuditLog {
-  id String @id @default(uuid())
-
-  action String
-
-  details String?
-
-  caseId String?
-
-  createdAt DateTime @default(now())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-}
-
-model Alert {
-  id String @id @default(uuid())
-
-  type String
-
-  severity String @default("HIGH")
-
-  message String
-
-  isRead Boolean @default(false)
-
-  createdAt DateTime @default(now())
-
-  caseId String
 }
