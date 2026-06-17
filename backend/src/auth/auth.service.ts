@@ -16,11 +16,12 @@ export class AuthService {
   ) {}
 
   async register(data: any) {
-    const existingUser = await this.prisma.user.findUnique({
-      where: {
-        email: data.email,
-      },
-    });
+    const existingUser =
+      await this.prisma.user.findUnique({
+        where: {
+          email: data.email,
+        },
+      });
 
     if (existingUser) {
       throw new BadRequestException(
@@ -28,57 +29,69 @@ export class AuthService {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(
-      data.password,
-      10,
-    );
+    const hashedPassword =
+      await bcrypt.hash(
+        data.password,
+        10,
+      );
 
-    const user = await this.prisma.user.create({
-      data: {
-        name: data.name,
-        email: data.email,
-        password: hashedPassword,
+    const user =
+      await this.prisma.user.create({
+        data: {
+          name: data.name,
+          email: data.email,
+          password:
+            hashedPassword,
 
-        // PUBLIC REGISTRATION = CITIZEN ONLY
-        role: 'CITIZEN',
+          role: 'CITIZEN',
 
-        citizenProfile: {
-          create: {
-            mobile: data.mobile,
+          citizenProfile: {
+            create: {
+              mobile:
+                data.mobile,
 
-            addressLine1:
-              data.addressLine1,
+              addressLine1:
+                data.addressLine1,
 
-            addressLine2:
-              data.addressLine2,
+              addressLine2:
+                data.addressLine2,
 
-            village: data.village,
+              village:
+                data.village,
 
-            ward: data.ward,
+              ward:
+                data.ward,
 
-            city: data.city,
+              city:
+                data.city,
 
-            district: data.district,
+              district:
+                data.district,
 
-            state: data.state,
+              state:
+                data.state,
 
-            pincode: data.pincode,
+              pincode:
+                data.pincode,
 
-            governmentIdType:
-              data.governmentIdType,
+              governmentIdType:
+                data.governmentIdType,
 
-            governmentIdNumber:
-              data.governmentIdNumber,
+              governmentIdNumber:
+                data.governmentIdNumber,
+            },
           },
         },
-      },
 
-      include: {
-        citizenProfile: true,
-      },
-    });
+        include: {
+          citizenProfile: true,
+        },
+      });
 
-    const { password, ...safeUser } = user;
+    const {
+      password,
+      ...safeUser
+    } = user;
 
     return {
       message:
@@ -118,11 +131,12 @@ export class AuthService {
       );
     }
 
-    const token = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    });
+    const token =
+      this.jwtService.sign({
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      });
 
     return {
       access_token: token,
@@ -136,6 +150,56 @@ export class AuthService {
         citizenProfile:
           user.citizenProfile,
       },
+    };
+  }
+
+  async changePassword(
+    data: any,
+  ) {
+    const user =
+      await this.prisma.user.findUnique({
+        where: {
+          id: data.userId,
+        },
+      });
+
+    if (!user) {
+      throw new BadRequestException(
+        'User not found',
+      );
+    }
+
+    const validPassword =
+      await bcrypt.compare(
+        data.currentPassword,
+        user.password,
+      );
+
+    if (!validPassword) {
+      throw new UnauthorizedException(
+        'Current password is incorrect',
+      );
+    }
+
+    const hashedPassword =
+      await bcrypt.hash(
+        data.newPassword,
+        10,
+      );
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password:
+          hashedPassword,
+      },
+    });
+
+    return {
+      message:
+        'Password changed successfully',
     };
   }
 }

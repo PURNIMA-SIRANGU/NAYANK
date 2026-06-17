@@ -37,9 +37,15 @@ export default function CitizenSidebar() {
   ];
 
   const logout = () => {
-    localStorage.clear();
-    router.push("/login");
-  };
+  localStorage.clear();
+  sessionStorage.clear();
+
+  router.replace(
+    "/login"
+  );
+
+  window.location.reload();
+};
 
   return (
     <aside

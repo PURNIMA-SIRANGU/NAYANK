@@ -12,74 +12,60 @@ import { createCase } from "@/services/case.services";
 export default function CitizenReportIncident() {
   const router = useRouter();
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
-  const [title, setTitle] =
-    useState("");
+  const submitCase = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const [description,
-    setDescription] =
-    useState("");
+    if (!title.trim()) {
+      alert("Incident title is required");
+      return;
+    }
 
-  const submitCase =
-    async (
-      e: React.FormEvent
-    ) => {
-      e.preventDefault();
+    if (!description.trim()) {
+      alert("Incident description is required");
+      return;
+    }
 
-      try {
-        setLoading(true);
+    try {
+      setLoading(true);
 
-        const user =
-          JSON.parse(
-            localStorage.getItem(
-              "user"
-            ) || "{}"
-          );
+      const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-        await createCase({
-          title,
-          description,
-
-          createdById:
-            user.id,
-        });
-
-        alert(
-          "Incident Submitted Successfully"
-        );
-
-        router.push(
-          "/citizen/my-complaints"
-        );
-      } catch (error) {
-        console.error(error);
-
-        alert(
-          "Failed to submit incident"
-        );
-      } finally {
-        setLoading(false);
+      if (!user.id) {
+        alert("User session not found. Please log in again.");
+        return;
       }
-    };
+
+      const createdCase = await createCase({
+        title,
+        description,
+        createdById: user.id,
+      });
+
+      alert("Incident Submitted Successfully");
+
+      // Redirects user to the evidence upload screen with the new case ID query parameter
+      router.push(`/citizen/upload-evidence?caseId=${createdCase.id}`);
+    } catch (error) {
+      console.error("Error creating case:", error);
+      alert("Failed to submit incident");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const inputStyle = {
     width: "100%",
-
     padding: "16px",
-
     borderRadius: "18px",
-
-    border:
-      "1px solid rgba(255,255,255,.08)",
-
-    background:
-      "rgba(255,255,255,.04)",
-
+    border: "1px solid rgba(255,255,255,.08)",
+    background: "rgba(255,255,255,.04)",
     color: "white",
-
     outline: "none",
+    marginTop: "8px", // Ensures clear spacing from the labels
   };
 
   return (
@@ -87,104 +73,65 @@ export default function CitizenReportIncident() {
       <FadeUp>
         <SectionTitle
           title="Report Incident"
-          subtitle="Create a new complaint and begin the investigation process."
+          subtitle="Create a complaint and immediately attach evidence."
         />
       </FadeUp>
 
       <FadeUp>
         <PremiumCard>
-          <form
-            onSubmit={
-              submitCase
-            }
-          >
+          <form onSubmit={submitCase}>
             <div
               style={{
-                display:
-                  "grid",
-
+                display: "grid",
                 gap: "20px",
               }}
             >
               <div>
-                <label>
+                <label style={{ color: "#94A3B8", fontSize: "14px" }}>
                   Incident Title
                 </label>
-
                 <input
-                  style={
-                    inputStyle
-                  }
+                  style={inputStyle}
                   placeholder="Enter incident title"
                   value={title}
-                  onChange={(e) =>
-                    setTitle(
-                      e.target
-                        .value
-                    )
-                  }
+                  onChange={(e) => setTitle(e.target.value)}
                 />
               </div>
 
               <div>
-                <label>
+                <label style={{ color: "#94A3B8", fontSize: "14px" }}>
                   Description
                 </label>
-
                 <textarea
                   style={{
                     ...inputStyle,
-
-                    minHeight:
-                      "180px",
-
-                    resize:
-                      "vertical",
+                    minHeight: "180px",
+                    resize: "vertical",
                   }}
                   placeholder="Describe the incident in detail..."
-                  value={
-                    description
-                  }
-                  onChange={(e) =>
-                    setDescription(
-                      e.target
-                        .value
-                    )
-                  }
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
 
               <button
                 type="submit"
-                disabled={
-                  loading
-                }
+                disabled={loading}
                 style={{
-                  height:
-                    "60px",
-
-                  border:
-                    "none",
-
-                  borderRadius:
-                    "18px",
-
-                  background:
-                    "linear-gradient(135deg,#2563EB,#60A5FA)",
-
-                  color:
-                    "white",
-
-                  fontWeight:
-                    700,
-
-                  cursor:
-                    "pointer",
+                  height: "60px",
+                  border: "none",
+                  borderRadius: "18px",
+                  background: loading
+                    ? "#475569"
+                    : "linear-gradient(135deg,#2563EB,#60A5FA)",
+                  color: "white",
+                  fontWeight: 700,
+                  cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.7 : 1,
+                  transition: "all 0.2s ease",
                 }}
               >
-                {loading
-                  ? "Submitting..."
-                  : "Submit Incident"}
+                {loading ? "Creating Complaint..." : "Create Complaint & Continue"}
               </button>
             </div>
           </form>

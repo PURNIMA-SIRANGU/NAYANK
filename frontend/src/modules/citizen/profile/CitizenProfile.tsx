@@ -1,29 +1,124 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { changePassword } from "@/services/auth.services";
+import ChangePasswordModal from "@/components/profile/ChangePasswordModel";
 
 import FadeUp from "@/components/motion/FadeUp";
 import PremiumCard from "@/components/ui/PremiumCard";
 import SectionTitle from "@/components/ui/SectionTitle";
+import NayankLoader from "@/components/ui/NayankLoader";
 
 export default function CitizenProfile() {
   const [user, setUser] =
     useState<any>(null);
+const [currentPassword, setCurrentPassword] =
+  useState("");
+const [showPasswordModal, setShowPasswordModal] =
+  useState(false);
+
+const [newPassword, setNewPassword] =
+  useState("");
+
+const [confirmPassword, setConfirmPassword] =
+  useState("");
+
+const [changingPassword, setChangingPassword] =
+  useState(false);
+  const router =
+    useRouter();
 
   useEffect(() => {
     const storedUser =
-      localStorage.getItem("user");
+      localStorage.getItem(
+        "user"
+      );
 
     if (storedUser) {
       setUser(
-        JSON.parse(storedUser)
+        JSON.parse(
+          storedUser
+        )
       );
     }
   }, []);
+const handleChangePassword =
+  async () => {
+    if (!currentPassword) {
+      alert(
+        "Current Password is required"
+      );
+      return;
+    }
+
+    if (!newPassword) {
+      alert(
+        "New Password is required"
+      );
+      return;
+    }
+
+    if (
+      newPassword !==
+      confirmPassword
+    ) {
+      alert(
+        "Passwords do not match"
+      );
+      return;
+    }
+
+    try {
+      setChangingPassword(
+        true
+      );
+
+      await changePassword(
+        user.id,
+        currentPassword,
+        newPassword
+      );
+
+      alert(
+        "Password changed successfully"
+      );
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+
+      setShowPasswordModal(
+        false
+      );
+    } catch (
+      error: any
+    ) {
+      alert(
+        error?.response
+          ?.data?.message ||
+          "Failed to change password"
+      );
+    } finally {
+      setChangingPassword(
+        false
+      );
+    }
+  };
+  const logout = () => {
+    localStorage.clear();
+    router.push("/login");
+  };
 
   if (!user) {
-    return null;
+    return (
+      <NayankLoader />
+    );
   }
+
+  const profile =
+    user.citizenProfile ||
+    {};
 
   return (
     <div>
@@ -40,6 +135,8 @@ export default function CitizenProfile() {
           gridTemplateColumns:
             "1fr 2fr",
           gap: "20px",
+          marginBottom:
+            "20px",
         }}
       >
         <FadeUp>
@@ -49,7 +146,6 @@ export default function CitizenProfile() {
                 display: "flex",
                 flexDirection:
                   "column",
-
                 alignItems:
                   "center",
               }}
@@ -57,33 +153,25 @@ export default function CitizenProfile() {
               <div
                 style={{
                   width: "120px",
-
                   height: "120px",
-
                   borderRadius:
                     "50%",
-
                   background:
                     "linear-gradient(135deg,#2563EB,#60A5FA)",
-
                   display: "flex",
-
                   alignItems:
                     "center",
-
                   justifyContent:
                     "center",
-
                   fontSize:
                     "2.5rem",
-
-                  fontWeight: 700,
-
+                  fontWeight:
+                    700,
                   marginBottom:
                     "20px",
                 }}
               >
-                {user?.name?.charAt(
+                {user.name?.charAt(
                   0
                 )}
               </div>
@@ -100,6 +188,29 @@ export default function CitizenProfile() {
               >
                 {user.role}
               </p>
+
+              <div
+                style={{
+                  marginTop:
+                    "10px",
+                  padding:
+                    "8px 16px",
+                  borderRadius:
+                    "999px",
+                  background:
+                    profile.isVerified
+                      ? "rgba(34,197,94,.15)"
+                      : "rgba(245,158,11,.15)",
+                  color:
+                    profile.isVerified
+                      ? "#4ADE80"
+                      : "#FBBF24",
+                }}
+              >
+                {profile.isVerified
+                  ? "Verified"
+                  : "Pending Verification"}
+              </div>
             </div>
           </PremiumCard>
         </FadeUp>
@@ -113,7 +224,7 @@ export default function CitizenProfile() {
                   "25px",
               }}
             >
-              Account Details
+              Citizen Information
             </h2>
 
             <div
@@ -126,32 +237,95 @@ export default function CitizenProfile() {
             >
               <ProfileField
                 label="Full Name"
-                value={user.name}
+                value={
+                  user.name
+                }
               />
 
               <ProfileField
                 label="Email"
-                value={user.email}
+                value={
+                  user.email
+                }
+              />
+
+              <ProfileField
+                label="Mobile"
+                value={
+                  profile.mobile ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="Government ID Type"
+                value={
+                  profile.governmentIdType ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="Government ID Number"
+                value={
+                  profile.governmentIdNumber ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="Village"
+                value={
+                  profile.village ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="Ward"
+                value={
+                  profile.ward ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="City"
+                value={
+                  profile.city ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="District"
+                value={
+                  profile.district ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="State"
+                value={
+                  profile.state ||
+                  "-"
+                }
+              />
+
+              <ProfileField
+                label="Pincode"
+                value={
+                  profile.pincode ||
+                  "-"
+                }
               />
 
               <ProfileField
                 label="Role"
-                value={user.role}
-              />
-
-              <ProfileField
-                label="Status"
-                value="Verified Citizen"
-              />
-
-              <ProfileField
-                label="Account Type"
-                value="Citizen"
-              />
-
-              <ProfileField
-                label="Member Since"
-                value="2026"
+                value={
+                  user.role
+                }
               />
             </div>
           </PremiumCard>
@@ -159,9 +333,47 @@ export default function CitizenProfile() {
       </div>
 
       <FadeUp>
+        <PremiumCard>
+          <h2
+            style={{
+              marginTop: 0,
+            }}
+          >
+            Address Information
+          </h2>
+
+          <div
+            style={{
+              marginTop:
+                "20px",
+              display: "grid",
+              gap: "16px",
+            }}
+          >
+            <ProfileField
+              label="Address Line 1"
+              value={
+                profile.addressLine1 ||
+                "-"
+              }
+            />
+
+            <ProfileField
+              label="Address Line 2"
+              value={
+                profile.addressLine2 ||
+                "-"
+              }
+            />
+          </div>
+        </PremiumCard>
+      </FadeUp>
+
+      <FadeUp>
         <PremiumCard
           style={{
-            marginTop: "20px",
+            marginTop:
+              "20px",
           }}
         >
           <h2
@@ -172,44 +384,98 @@ export default function CitizenProfile() {
             Account Security
           </h2>
 
-          <p
+          <div
             style={{
-              color:
-                "#94A3B8",
-              marginBottom:
+              display: "flex",
+              gap: "15px",
+              marginTop:
                 "20px",
             }}
           >
-            Manage your
-            authentication and
-            account access.
-          </p>
-
-          <button
-            style={{
-              padding:
-                "14px 24px",
-
-              borderRadius:
-                "16px",
-
-              border: "none",
-
-              background:
-                "linear-gradient(135deg,#2563EB,#60A5FA)",
-
-              color: "white",
-
-              cursor:
-                "pointer",
-
-              fontWeight: 600,
-            }}
-          >
-            Change Password
-          </button>
+           <button
+  onClick={() =>
+    setShowPasswordModal(
+      true
+    )
+  }
+  style={{
+    padding:
+      "14px 24px",
+    borderRadius:
+      "16px",
+    border:
+      "none",
+    background:
+      "linear-gradient(135deg,#2563EB,#60A5FA)",
+    color:
+      "#fff",
+    cursor:
+      "pointer",
+    fontWeight:
+      600,
+  }}
+>
+  Change Password
+</button>
+            <button
+              onClick={
+                logout
+              }
+              style={{
+                padding:
+                  "14px 24px",
+                borderRadius:
+                  "16px",
+                border:
+                  "none",
+                background:
+                  "rgba(239,68,68,.15)",
+                color:
+                  "#F87171",
+                cursor:
+                  "pointer",
+                fontWeight:
+                  600,
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </PremiumCard>
       </FadeUp>
+      <ChangePasswordModal
+  open={showPasswordModal}
+  onClose={() =>
+    setShowPasswordModal(
+      false
+    )
+  }
+  userId={user.id}
+  currentPassword={
+    currentPassword
+  }
+  setCurrentPassword={
+    setCurrentPassword
+  }
+  newPassword={
+    newPassword
+  }
+  setNewPassword={
+    setNewPassword
+  }
+  confirmPassword={
+    confirmPassword
+  }
+  setConfirmPassword={
+    setConfirmPassword
+  }
+  changingPassword={
+    changingPassword
+  }
+  setChangingPassword={
+    setChangingPassword
+  }
+/>
     </div>
   );
 }
@@ -225,30 +491,31 @@ function ProfileField({
     <div
       style={{
         padding: "18px",
-
-        borderRadius: "18px",
-
+        borderRadius:
+          "18px",
         background:
           "rgba(255,255,255,.03)",
-
         border:
           "1px solid rgba(255,255,255,.05)",
       }}
     >
       <p
         style={{
-          color: "#94A3B8",
-
+          color:
+            "#94A3B8",
           marginBottom:
             "8px",
-
-          fontSize: ".9rem",
+          fontSize:
+            ".9rem",
         }}
       >
         {label}
       </p>
 
-      <strong>{value}</strong>
+      <strong>
+        {value}
+      </strong>
+    
     </div>
   );
 }
