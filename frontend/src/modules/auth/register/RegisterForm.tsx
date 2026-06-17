@@ -47,8 +47,10 @@ export default function RegisterForm() {
       return;
     }
     if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(form.password)) {
-      alert("Password must contain:\n\n• 1 Uppercase\n• 1 Lowercase\n• 1 Number\n• 1 Special Character\n• Minimum 8 characters");
-      return;
+      alert(
+  "Password does not meet the required format. Please follow the password requirements shown above the password field."
+);
+return;
     }
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match");
@@ -187,6 +189,48 @@ export default function RegisterForm() {
 
         {/* SECTION 4: Passwords */}
         <h3 style={{ color: "#60A5FA", marginBottom: "15px", marginTop: "25px" }}>Security Setup</h3>
+        <div
+  style={{
+    marginBottom: "20px",
+    padding: "18px",
+    borderRadius: "18px",
+    background: "rgba(37,99,235,.08)",
+    border: "1px solid rgba(96,165,250,.25)",
+  }}
+>
+  <p
+    style={{
+      margin: 0,
+      color: "#CBD5E1",
+      lineHeight: 1.9,
+      fontSize: ".95rem",
+    }}
+  >
+    <strong style={{ color: "#60A5FA" }}>
+      Password Requirements
+    </strong>
+
+    <br />
+
+    ✓ Minimum 8 Characters
+
+    <br />
+
+    ✓ At Least 1 Uppercase Letter (A-Z)
+
+    <br />
+
+    ✓ At Least 1 Lowercase Letter (a-z)
+
+    <br />
+
+    ✓ At Least 1 Number (0-9)
+
+    <br />
+
+    ✓ At Least 1 Special Character (@, #, $, %, &, *)
+  </p>
+</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}>
           <input placeholder="Password" type="password" style={inputStyle} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           <input placeholder="Confirm Password" type="password" style={inputStyle} value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })} />
