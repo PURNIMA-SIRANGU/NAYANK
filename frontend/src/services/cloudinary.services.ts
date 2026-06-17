@@ -1,44 +1,40 @@
-export const uploadToCloudinary =
-  async (file: File) => {
-    const formData =
-      new FormData();
+export const uploadToCloudinary = async (file: File) => {
+  console.log(
+    "CLOUD_NAME:",
+    process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  );
 
-    formData.append(
-      "file",
-      file
-    );
+  console.log(
+    "UPLOAD_PRESET:",
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+  );
 
-    formData.append(
-      "upload_preset",
-      process.env
-        .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
-    );
+  const formData = new FormData();
 
-    const response =
-      await fetch(
-        `https://api.cloudinary.com/v1_1/${
-          process.env
-            .NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-        }/auto/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+  formData.append("file", file);
 
-    const data =
-      await response.json();
+  formData.append(
+    "upload_preset",
+    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+  );
 
-    console.log(
-      "CLOUDINARY RESPONSE:",
-      data
-    );
-
-    if (!data.secure_url) {
-      throw new Error(
-        JSON.stringify(data)
-      );
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${
+      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+    }/auto/upload`,
+    {
+      method: "POST",
+      body: formData,
     }
+  );
 
-    return data.secure_url;
-  };
+  const data = await response.json();
+
+  console.log("CLOUDINARY RESPONSE:", data);
+
+  if (!data.secure_url) {
+    throw new Error(JSON.stringify(data));
+  }
+
+  return data.secure_url;
+};
