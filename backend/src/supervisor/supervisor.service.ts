@@ -35,13 +35,6 @@ export class SupervisorService {
         },
       });
 
-    const criticalAlerts =
-      await this.prisma.alert.count({
-        where: {
-          severity: 'CRITICAL',
-        },
-      });
-
     const alerts =
       await this.prisma.alert.findMany({
         orderBy: {
@@ -85,7 +78,6 @@ export class SupervisorService {
 
       highRiskCases,
       unreadAlerts,
-      criticalAlerts,
 
       alerts,
 
