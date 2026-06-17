@@ -1,86 +1,489 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import PremiumCard from "@/components/ui/PremiumCard";
+import SectionTitle from "@/components/ui/SectionTitle";
+import FadeUp from "@/components/motion/FadeUp";
+
 export default function EvidencePage() {
-  const evidence = [
-    {
-      id: "EVD-001",
-      caseId: "CASE-001",
-      type: "IMAGE",
-      status: "VERIFIED",
-    },
-    {
-      id: "EVD-002",
-      caseId: "CASE-002",
-      type: "VIDEO",
-      status: "PENDING",
-    },
-    {
-      id: "EVD-003",
-      caseId: "CASE-003",
-      type: "DOCUMENT",
-      status: "VERIFIED",
-    },
-  ];
+  const [evidence, setEvidence] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadEvidence();
+  }, []);
+
+  async function loadEvidence() {
+    try {
+      const res = await fetch(
+        "http://localhost:3001/evidence"
+      );
+
+      const data = await res.json();
+
+      setEvidence(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="text-white p-8">
+        Loading Evidence...
+      </div>
+    );
+  }
+
+  const totalEvidence = evidence.length;
+
+  const totalImages = evidence.filter(
+    (e) => e.type === "IMAGE"
+  ).length;
+
+  const totalVideos = evidence.filter(
+    (e) => e.type === "VIDEO"
+  ).length;
+
+  const totalAudio = evidence.filter(
+    (e) => e.type === "AUDIO"
+  ).length;
 
   return (
-    <div className="p-8 text-white">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+      }}
+    >
+      <FadeUp>
+        <SectionTitle
+          title="Evidence Intelligence Center"
+          subtitle="All investigation evidence collected across the NAYANK platform."
+        />
+      </FadeUp>
 
-      <h1 className="text-4xl font-bold mb-8">
-        Evidence Management
-      </h1>
+      {/* ANALYTICS */}
 
-      <div className="grid md:grid-cols-4 gap-4 mb-8">
+      <FadeUp>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(auto-fit,minmax(250px,1fr))",
+            gap: "20px",
+          }}
+        >
+          <PremiumCard>
+            <p style={{ color: "#94A3B8" }}>
+              Total Evidence
+            </p>
 
-        <div className="bg-[#0B1220] p-5 rounded-xl">
-          <p>Total Evidence</p>
-          <h2 className="text-4xl font-bold">132</h2>
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                marginTop: "10px",
+              }}
+            >
+              {totalEvidence}
+            </h2>
+          </PremiumCard>
+
+          <PremiumCard>
+            <p style={{ color: "#94A3B8" }}>
+              Images
+            </p>
+
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                color: "#38BDF8",
+                marginTop: "10px",
+              }}
+            >
+              {totalImages}
+            </h2>
+          </PremiumCard>
+
+          <PremiumCard>
+            <p style={{ color: "#94A3B8" }}>
+              Videos
+            </p>
+
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                color: "#4ADE80",
+                marginTop: "10px",
+              }}
+            >
+              {totalVideos}
+            </h2>
+          </PremiumCard>
+
+          <PremiumCard>
+            <p style={{ color: "#94A3B8" }}>
+              Audio Files
+            </p>
+
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                color: "#A855F7",
+                marginTop: "10px",
+              }}
+            >
+              {totalAudio}
+            </h2>
+          </PremiumCard>
         </div>
+      </FadeUp>
 
-        <div className="bg-[#0B1220] p-5 rounded-xl">
-          <p>Images</p>
-          <h2 className="text-4xl font-bold">76</h2>
-        </div>
+      {/* EVIDENCE LIST */}
 
-        <div className="bg-[#0B1220] p-5 rounded-xl">
-          <p>Videos</p>
-          <h2 className="text-4xl font-bold">32</h2>
-        </div>
+      {evidence.map((item) => (
+        <FadeUp key={item.id}>
+          <PremiumCard>
 
-        <div className="bg-[#0B1220] p-5 rounded-xl">
-          <p>Documents</p>
-          <h2 className="text-4xl font-bold">24</h2>
-        </div>
+            {/* HEADER */}
 
-      </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                alignItems: "start",
+                gap: "20px",
+                flexWrap: "wrap",
+              }}
+            >
+              <div>
+                <h2
+                  style={{
+                    fontSize: "1.6rem",
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.case?.title}
+                </h2>
 
-      <div className="bg-[#0B1220] p-6 rounded-xl">
+                <p
+                  style={{
+                    color: "#94A3B8",
+                    marginTop: "10px",
+                  }}
+                >
+                  {item.case?.description}
+                </p>
+              </div>
 
-        <table className="w-full">
+              <div
+                style={{
+                  padding:
+                    "10px 16px",
+                  borderRadius:
+                    "14px",
+                  background:
+                    item.type ===
+                    "IMAGE"
+                      ? "rgba(56,189,248,.15)"
+                      : item.type ===
+                        "VIDEO"
+                      ? "rgba(74,222,128,.15)"
+                      : "rgba(168,85,247,.15)",
+                  color:
+                    item.type ===
+                    "IMAGE"
+                      ? "#38BDF8"
+                      : item.type ===
+                        "VIDEO"
+                      ? "#4ADE80"
+                      : "#A855F7",
+                  fontWeight:
+                    600,
+                }}
+              >
+                {item.type}
+              </div>
+            </div>
 
-          <thead>
-            <tr className="text-left border-b border-slate-700">
-              <th className="py-3">Evidence ID</th>
-              <th>Case</th>
-              <th>Type</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+            {/* PREVIEW */}
 
-          <tbody>
-            {evidence.map((item) => (
-              <tr key={item.id}>
-                <td className="py-4">{item.id}</td>
-                <td>{item.caseId}</td>
-                <td>{item.type}</td>
-                <td className="text-green-400">
-                  {item.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+            <div
+              style={{
+                marginTop: "24px",
+              }}
+            >
+              {item.type ===
+                "IMAGE" && (
+                <img
+                  src={
+                    item.fileUrl
+                  }
+                  alt=""
+                  style={{
+                    width:
+                      "100%",
+                    borderRadius:
+                      "20px",
+                    maxHeight:
+                      "500px",
+                    objectFit:
+                      "cover",
+                  }}
+                />
+              )}
 
-        </table>
+              {item.type ===
+                "VIDEO" && (
+                <video
+                  controls
+                  style={{
+                    width:
+                      "100%",
+                    borderRadius:
+                      "20px",
+                  }}
+                >
+                  <source
+                    src={
+                      item.fileUrl
+                    }
+                  />
+                </video>
+              )}
 
-      </div>
+              {item.type ===
+                "AUDIO" && (
+                <audio
+                  controls
+                  style={{
+                    width:
+                      "100%",
+                  }}
+                >
+                  <source
+                    src={
+                      item.fileUrl
+                    }
+                  />
+                </audio>
+              )}
+            </div>
 
+            {/* DETAILS */}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit,minmax(220px,1fr))",
+                gap: "20px",
+                marginTop: "24px",
+              }}
+            >
+              <PremiumCard>
+                <p
+                  style={{
+                    color:
+                      "#94A3B8",
+                  }}
+                >
+                  Case Status
+                </p>
+
+                <h3
+                  style={{
+                    marginTop:
+                      "10px",
+                  }}
+                >
+                  {
+                    item.case
+                      ?.status
+                  }
+                </h3>
+              </PremiumCard>
+
+              <PremiumCard>
+                <p
+                  style={{
+                    color:
+                      "#94A3B8",
+                  }}
+                >
+                  Uploaded On
+                </p>
+
+                <h3
+                  style={{
+                    marginTop:
+                      "10px",
+                  }}
+                >
+                  {new Date(
+                    item.createdAt
+                  ).toLocaleDateString()}
+                </h3>
+              </PremiumCard>
+
+              <PremiumCard>
+                <p
+                  style={{
+                    color:
+                      "#94A3B8",
+                  }}
+                >
+                  Evidence Type
+                </p>
+
+                <h3
+                  style={{
+                    marginTop:
+                      "10px",
+                  }}
+                >
+                  {item.type}
+                </h3>
+              </PremiumCard>
+            </div>
+
+            {/* NETRAI */}
+
+            {item.videoAnalysis && (
+              <div
+                style={{
+                  marginTop:
+                    "24px",
+                }}
+              >
+                <PremiumCard>
+                  <h3
+                    style={{
+                      color:
+                        "#38BDF8",
+                      marginBottom:
+                        "15px",
+                    }}
+                  >
+                    NETRAI Analysis
+                  </h3>
+
+                  <div
+                    style={{
+                      display:
+                        "grid",
+                      gridTemplateColumns:
+                        "repeat(auto-fit,minmax(220px,1fr))",
+                      gap: "20px",
+                    }}
+                  >
+                    <div>
+                      <p>
+                        Persons
+                      </p>
+                      <h2>
+                        {
+                          item
+                            .videoAnalysis
+                            ?.persons
+                        }
+                      </h2>
+                    </div>
+
+                    <div>
+                      <p>
+                        Vehicles
+                      </p>
+                      <h2>
+                        {
+                          item
+                            .videoAnalysis
+                            ?.vehicles
+                        }
+                      </h2>
+                    </div>
+
+                    <div>
+                      <p>
+                        Plates
+                      </p>
+                      <h2>
+                        {
+                          item
+                            .videoAnalysis
+                            ?.plates
+                        }
+                      </h2>
+                    </div>
+                  </div>
+
+                  <p
+                    style={{
+                      marginTop:
+                        "16px",
+                      color:
+                        "#CBD5E1",
+                    }}
+                  >
+                    {
+                      item
+                        .videoAnalysis
+                        ?.summary
+                    }
+                  </p>
+                </PremiumCard>
+              </div>
+            )}
+
+            {/* SANKET */}
+
+            {item.summary && (
+              <div
+                style={{
+                  marginTop:
+                    "24px",
+                }}
+              >
+                <PremiumCard>
+                  <h3
+                    style={{
+                      color:
+                        "#A855F7",
+                      marginBottom:
+                        "15px",
+                    }}
+                  >
+                    SANKET Report
+                  </h3>
+
+                  <div
+                    style={{
+                      maxHeight:
+                        "350px",
+                      overflowY:
+                        "auto",
+                      color:
+                        "#CBD5E1",
+                      lineHeight:
+                        1.8,
+                      whiteSpace:
+                        "pre-wrap",
+                    }}
+                  >
+                    {item.summary}
+                  </div>
+                </PremiumCard>
+              </div>
+            )}
+
+          </PremiumCard>
+        </FadeUp>
+      ))}
     </div>
   );
 }

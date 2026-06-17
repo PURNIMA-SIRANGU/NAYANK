@@ -13,9 +13,15 @@ export default function OfficerLayout({
       <div className="flex-1 flex flex-col">
         <OfficerHeader />
 
-        <main className="flex-1 p-8 overflow-y-auto">
-          {children}
-        </main>
+        <main
+  style={{
+    flex: 1,
+    padding: "40px",
+    overflowY: "auto",
+  }}
+>
+  {children}
+</main>
       </div>
     </div>
   );
