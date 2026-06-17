@@ -22,3 +22,15 @@ export const getCaseEvidence =
 
     return response.data;
   };
+
+export const getEvidence =
+  async (
+    evidenceId: string
+  ) => {
+    const response =
+      await api.get(
+        `/evidence/${evidenceId}`
+      );
+
+    return response.data;
+  };

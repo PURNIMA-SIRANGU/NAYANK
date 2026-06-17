@@ -26,3 +26,22 @@ export const registerUser =
 
     return response.data;
   };
+
+export const changePassword =
+  async (
+    userId: string,
+    currentPassword: string,
+    newPassword: string
+  ) => {
+    const response =
+      await api.post(
+        "/auth/change-password",
+        {
+          userId,
+          currentPassword,
+          newPassword,
+        }
+      );
+
+    return response.data;
+  };
