@@ -5,12 +5,13 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: true,
     credentials: true,
   });
 
-  // ✅ Enable DTO Validation
+  // Global Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -19,9 +20,12 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3001);
+  // Render provides PORT automatically
+  const port = process.env.PORT || 3001;
 
-  console.log('🚀 Backend Running: http://localhost:3001');
+  await app.listen(port);
+
+  console.log(`🚀 Backend Running on port ${port}`);
 }
 
 bootstrap();
