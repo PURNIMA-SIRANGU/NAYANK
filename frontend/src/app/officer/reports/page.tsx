@@ -9,6 +9,7 @@ import FadeUp from "@/components/motion/FadeUp";
 export default function ReportsPage() {
   const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     loadReports();
@@ -27,11 +28,16 @@ export default function ReportsPage() {
   }
 
   if (loading) {
-    return <div className="text-white p-8">Loading Reports...</div>;
+    return (
+      <div style={{ padding: "40px", color: "white", backgroundColor: "#060B13", minHeight: "100vh", fontFamily: "sans-serif" }}>
+        Loading Intelligence Reports...
+      </div>
+    );
   }
 
+  // --- Dynamic Live Metrics From Your State Arrays ---
   const totalCases = cases.length;
-
+  
   const totalEvidence = cases.reduce(
     (sum, item) => sum + (item.evidences?.length || 0),
     0
@@ -42,14 +48,36 @@ export default function ReportsPage() {
     0
   );
 
+  const processedVideosCount = cases.flatMap((c: any) => c.evidences || [])
+    .filter((e: any) => e.videoAnalysis).length;
+
+  // --- Real-Time Search Filtering ---
+  const filteredCases = cases.filter((item) => {
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        item.title?.toLowerCase().includes(query) ||
+        item.description?.toLowerCase().includes(query) ||
+        item.status?.toLowerCase().includes(query)
+      );
+    }
+    return true;
+  });
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
         gap: "24px",
+        backgroundColor: "#060B13",
+        color: "#F8FAFC",
+        padding: "32px",
+        minHeight: "100vh",
+        fontFamily: "sans-serif",
       }}
     >
+      {/* HEADER ROW DESCRIPTION */}
       <FadeUp>
         <SectionTitle
           title="Investigation Records & Reports"
@@ -57,419 +85,178 @@ export default function ReportsPage() {
         />
       </FadeUp>
 
-      {/* ANALYTICS */}
-
+      {/* TOP METRIC TELEMETRY OVERVIEW PANELS */}
       <FadeUp>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
             gap: "20px",
           }}
         >
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Total Cases</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                marginTop: "10px",
-              }}
-            >
-              {totalCases}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#2563EB", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Total Cases</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0" }}>{totalCases}</h2>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Evidence Records</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#38BDF8",
-                marginTop: "10px",
-              }}
-            >
-              {totalEvidence}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#38BDF8", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Evidence Records</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0", color: "#38BDF8" }}>{totalEvidence}</h2>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Interviews</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#A855F7",
-                marginTop: "10px",
-              }}
-            >
-              {totalInterviews}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#A855F7", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Interviews</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0", color: "#A855F7" }}>{totalInterviews}</h2>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Reports Generated</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#4ADE80",
-                marginTop: "10px",
-              }}
-            >
-              {totalCases}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#4ADE80", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Reports Generated</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0", color: "#4ADE80" }}>{totalCases}</h2>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Processed Videos</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#38BDF8",
-                marginTop: "10px",
-              }}
-            >
-              {
-                cases
-                  .flatMap((c: any) => c.evidences || [])
-                  .filter((e: any) => e.videoAnalysis).length
-              }
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#0EA5E9", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Processed Videos</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0", color: "#0EA5E9" }}>{processedVideosCount}</h2>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>Downloadable Reports</p>
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#22C55E",
-                marginTop: "10px",
-              }}
-            >
-              {cases.length}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "4px", height: "32px", background: "#22C55E", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Downloadable Reports</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, margin: "4px 0 0 0", color: "#22C55E" }}>{totalCases}</h2>
+            </div>
           </PremiumCard>
         </div>
       </FadeUp>
 
-      {/* REPORTS */}
+      {/* FILTER SEARCH UTILITY INPUT */}
+      <FadeUp>
+        <div style={{ display: "flex", justifyContent: "flex-end", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "16px" }}>
+          <input
+            type="text"
+            placeholder="Search reports by case..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "8px", color: "white", padding: "8px 16px", fontSize: "13px", width: "260px", outline: "none" }}
+          />
+        </div>
+      </FadeUp>
 
-      {cases.map((item) => {
-        const netraiReports =
-          item.evidences?.filter((e: any) => e.videoAnalysis) || [];
+      {/* REPORTS LIST TABLE SYSTEM */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        
+        {/* Table Labels Row */}
+        <div style={{ display: "grid", gridTemplateColumns: "3fr 1.2fr 1fr 1fr 1fr 2fr", padding: "0 24px", fontSize: "11px", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span>Case Details</span>
+          <span>Date Created</span>
+          <span>Evidence</span>
+          <span>NETRAI</span>
+          <span>SANKET</span>
+          <span style={{ textAlign: "right" }}>Available Actions</span>
+        </div>
 
-        const sanketReports =
-          item.evidences?.filter((e: any) => e.summary) || [];
+        {filteredCases.length > 0 ? (
+          filteredCases.map((item) => {
+            const netraiReports = item.evidences?.filter((e: any) => e.videoAnalysis) || [];
+            const sanketReports = item.evidences?.filter((e: any) => e.summary) || [];
 
-        return (
-          <FadeUp key={item.id}>
-            <PremiumCard>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "start",
-                  gap: "20px",
-                  flexWrap: "wrap",
-                }}
-              >
-                <div>
-                  <h2
-                    style={{
-                      fontSize: "1.7rem",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {item.title}
-                  </h2>
-
-                  <p
-                    style={{
-                      color: "#94A3B8",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {item.description}
-                  </p>
-                </div>
-
-                <div
-                  style={{
-                    padding: "10px 16px",
-                    borderRadius: "14px",
-
-                    background:
-                      item.status === "OPEN"
-                        ? "rgba(56,189,248,.15)"
-                        : item.status === "IN_PROGRESS"
-                        ? "rgba(251,191,36,.15)"
-                        : "rgba(74,222,128,.15)",
-
-                    color:
-                      item.status === "OPEN"
-                        ? "#38BDF8"
-                        : item.status === "IN_PROGRESS"
-                        ? "#FBBF24"
-                        : "#4ADE80",
-
-                    fontWeight: 700,
-                  }}
-                >
-                  {item.status}
-                </div>
-              </div>
-
-              {/* SUMMARY */}
-
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-                  gap: "20px",
-                  marginTop: "24px",
-                }}
-              >
-                <PremiumCard>
-                  <p
-                    style={{
-                      color: "#94A3B8",
-                    }}
-                  >
-                    Evidence
-                  </p>
-
-                  <h2
-                    style={{
-                      marginTop: "10px",
-                    }}
-                  >
-                    {item.evidences?.length || 0}
-                  </h2>
-                </PremiumCard>
-
-                <PremiumCard>
-                  <p
-                    style={{
-                      color: "#94A3B8",
-                    }}
-                  >
-                    NETRAI Reports
-                  </p>
-
-                  <h2
-                    style={{
-                      marginTop: "10px",
-                      color: "#38BDF8",
-                    }}
-                  >
-                    {netraiReports.length}
-                  </h2>
-                </PremiumCard>
-
-                <PremiumCard>
-                  <p
-                    style={{
-                      color: "#94A3B8",
-                    }}
-                  >
-                    SANKET Reports
-                  </p>
-
-                  <h2
-                    style={{
-                      marginTop: "10px",
-                      color: "#A855F7",
-                    }}
-                  >
-                    {sanketReports.length}
-                  </h2>
-                </PremiumCard>
-
-                <PremiumCard>
-                  <p
-                    style={{
-                      color: "#94A3B8",
-                    }}
-                  >
-                    Created
-                  </p>
-
-                  <h3
-                    style={{
-                      marginTop: "10px",
-                    }}
-                  >
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </h3>
-                </PremiumCard>
-              </div>
-
-              {/* NETRAI */}
-
-              {netraiReports.length > 0 && (
-                <div
-                  style={{
-                    marginTop: "24px",
-                  }}
-                >
-                  <PremiumCard>
-                    <h3
-                      style={{
-                        color: "#38BDF8",
-                        marginBottom: "14px",
-                      }}
-                    >
-                      NETRAI Intelligence
-                    </h3>
-
-                    {netraiReports.map((report: any) => (
-                      <div
-                        key={report.id}
-                        style={{
-                          marginBottom: "12px",
-                        }}
-                      >
-                        <p>
-                          👤 Persons: {report.videoAnalysis?.persons}
-                        </p>
-
-                        <p>
-                          🚗 Vehicles: {report.videoAnalysis?.vehicles}
-                        </p>
-
-                        <p>
-                          🔍 Plates: {report.videoAnalysis?.plates}
-                        </p>
-
-                        <p
-                          style={{
-                            color: "#CBD5E1",
-                            marginTop: "8px",
-                          }}
-                        >
-                          {report.videoAnalysis?.summary}
-                        </p>
+            return (
+              <FadeUp key={item.id}>
+                <PremiumCard style={{ padding: "20px 24px", background: "#090F1B", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "3fr 1.2fr 1fr 1fr 1fr 2fr", alignItems: "center" }}>
+                    
+                    {/* Case Header Info */}
+                    <div style={{ paddingRight: "16px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px" }}>
+                        <h4 style={{ margin: 0, fontSize: "15px", fontWeight: 600, color: "#FFFFFF" }}>{item.title}</h4>
+                        <span style={{
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          background: item.status === "OPEN" ? "rgba(56,189,248,0.1)" : item.status === "IN_PROGRESS" ? "rgba(251,191,36,0.1)" : "rgba(74,222,128,0.1)",
+                          color: item.status === "OPEN" ? "#38BDF8" : item.status === "IN_PROGRESS" ? "#FBBF24" : "#4ADE80"
+                        }}>
+                          {item.status}
+                        </span>
                       </div>
-                    ))}
-                  </PremiumCard>
-                </div>
-              )}
+                      <p style={{ margin: 0, color: "#64748B", fontSize: "12px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {item.description || "No baseline text description mapped."}
+                      </p>
+                    </div>
 
-              {/* SANKET */}
+                    {/* Allocation Timestamp */}
+                    <div style={{ color: "#94A3B8", fontSize: "13px" }}>
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recent Intake"}
+                    </div>
 
-              {sanketReports.length > 0 && (
-                <div
-                  style={{
-                    marginTop: "24px",
-                  }}
-                >
-                  <PremiumCard>
-                    <h3
-                      style={{
-                        color: "#A855F7",
-                        marginBottom: "14px",
-                      }}
-                    >
-                      SANKET Intelligence
-                    </h3>
+                    {/* Evidence Inventory Metrics */}
+                    <div style={{ color: "#E2E8F0", fontSize: "14px", fontWeight: 500 }}>
+                      {item.evidences?.length || 0}
+                    </div>
 
-                    {sanketReports.map((report: any) => (
-                      <div
-                        key={report.id}
-                        style={{
-                          marginBottom: "20px",
-                        }}
+                    {/* NETRAI Logs Metrics */}
+                    <div style={{ color: "#38BDF8", fontSize: "14px", fontWeight: 600 }}>
+                      {netraiReports.length}
+                    </div>
+
+                    {/* SANKET Logs Metrics */}
+                    <div style={{ color: "#A855F7", fontSize: "14px", fontWeight: 600 }}>
+                      {sanketReports.length}
+                    </div>
+
+                    {/* Action Download Controllers Area */}
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", flexWrap: "wrap" }}>
+                      <button
+                        onClick={() => window.open(`http://localhost:3001/cases/${item.id}/report/pdf`, "_blank")}
+                        style={{ border: "none", padding: "8px 12px", borderRadius: "6px", background: "#2563EB", color: "white", fontWeight: 600, fontSize: "11px", cursor: "pointer", transition: "background 0.2s" }}
                       >
-                        <div
-                          style={{
-                            color: "#CBD5E1",
-                            whiteSpace: "pre-wrap",
-                            lineHeight: 1.8,
-                          }}
+                        PDF Report
+                      </button>
+
+                      {netraiReports.length > 0 && (
+                        <button
+                          onClick={() => window.open(`http://localhost:3001/reports/${item.id}/video`, "_blank")}
+                          style={{ border: "none", padding: "8px 12px", borderRadius: "6px", background: "#0EA5E9", color: "white", fontWeight: 600, fontSize: "11px", cursor: "pointer", transition: "background 0.2s" }}
                         >
-                          {report.summary.slice(0, 500)}
-                        </div>
-                      </div>
-                    ))}
-                  </PremiumCard>
-                </div>
-              )}
+                          Video Download
+                        </button>
+                      )}
 
-              {/* ACTION BUTTONS */}
-              
-              <div
-                style={{
-                  display: "flex",
-                  gap: "12px",
-                  marginTop: "24px",
-                  flexWrap: "wrap",
-                }}
-              >
-                <button
-                  onClick={() =>
-                    window.open(
-                      `http://localhost:3001/cases/${item.id}/report/pdf`,
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    border: "none",
-                    padding: "14px 22px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(90deg,#2563EB,#60A5FA)",
-                    color: "white",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
-                >
-                  📄 Download Report PDF
-                </button>
+                      <button
+                        onClick={() => window.open(`http://localhost:3001/cases/${item.id}/report`, "_blank")}
+                        style={{ border: "1px solid rgba(255,255,255,0.1)", padding: "7px 12px", borderRadius: "6px", background: "transparent", color: "#94A3B8", fontWeight: 500, fontSize: "11px", cursor: "pointer", transition: "all 0.2s" }}
+                      >
+                        Intelligence Log
+                      </button>
+                    </div>
 
-                {item.evidences?.some((e: any) => e.videoAnalysis) && (
-                  <button
-                    onClick={() =>
-                      window.open(
-                        `http://localhost:3001/reports/${item.id}/video`,
-                        "_blank"
-                      )
-                    }
-                    style={{
-                      border: "none",
-                      padding: "14px 22px",
-                      borderRadius: "14px",
-                      background: "linear-gradient(90deg,#0EA5E9,#06B6D4)",
-                      color: "white",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    🎥 Download Processed Video
-                  </button>
-                )}
-
-                <button
-                  onClick={() =>
-                    window.open(
-                      `http://localhost:3001/cases/${item.id}/report`,
-                      "_blank"
-                    )
-                  }
-                  style={{
-                    border: "1px solid rgba(255,255,255,.1)",
-                    padding: "14px 22px",
-                    borderRadius: "14px",
-                    background: "transparent",
-                    color: "white",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  📊 Intelligence Report
-                </button>
-              </div>
-
-            </PremiumCard>
-          </FadeUp>
-        );
-      })}
+                  </div>
+                </PremiumCard>
+              </FadeUp>
+            );
+          })
+        ) : (
+          <div style={{ padding: "48px", textAlign: "center", color: "#64748B", background: "#090F1B", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.02)" }}>
+            No compiled intelligence data maps to your current search query.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

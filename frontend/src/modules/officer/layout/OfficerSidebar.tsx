@@ -1,224 +1,213 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const menuItems = [
   {
     name: "Dashboard",
     href: "/officer/dashboard",
-    icon: "📊",
   },
   {
-    name: "Cases",
+    name: "Assigned Cases",
     href: "/officer/cases",
-    icon: "📂",
   },
   {
-    name: "Evidence",
+    name: "Evidence Manager",
     href: "/officer/evidence",
-    icon: "🗂️",
   },
   {
     name: "NETRAI",
     href: "/officer/nethrai",
-    icon: "👁️",
   },
   {
     name: "SANKET",
     href: "/officer/sanket",
-    icon: "🎙️",
   },
   {
     name: "Reports",
     href: "/officer/reports",
-    icon: "📑",
+  },
+  {
+    name: "Profile",
+    href: "/officer/profile",
   },
 ];
 
 export default function OfficerSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clean up local tracking session data
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Explicitly redirect to your login path location
+    router.replace("/login");
+  };
 
   return (
     <aside
       style={{
-        width: "300px",
-        minHeight: "100vh",
-        background:
-          "linear-gradient(180deg,#08111F 0%,#040B14 100%)",
-        borderRight: "1px solid rgba(255,255,255,.08)",
-        padding: "24px",
+        width: "260px",
+        height: "100vh",
+        background: "#030712",
+        borderRight: "1px solid rgba(255, 255, 255, 0.08)",
+        padding: "24px 16px",
         position: "sticky",
         top: 0,
+        display: "flex",
+        flexDirection: "column",
+        boxSizing: "border-box",
       }}
     >
-      {/* LOGO */}
-
-      <div
-        style={{
-          marginBottom: "40px",
-        }}
-      >
+      {/* BRANDING LOGO -> POINTS DIRECTLY TO YOUR ROOT LANDING PAGE */}
+      <Link href="/" style={{ textDecoration: "none", display: "block", marginBottom: "36px", paddingLeft: "12px" }}>
         <h1
           style={{
-            fontSize: "2rem",
+            fontSize: "1.75rem",
             fontWeight: 800,
-            color: "#60A5FA",
-            fontFamily: "Space Grotesk",
+            color: "#38BDF8",
+            fontFamily: "Space Grotesk, sans-serif",
+            letterSpacing: "-0.03em",
+            margin: 0,
           }}
         >
           NAYANK
         </h1>
-
         <p
           style={{
-            color: "#94A3B8",
-            marginTop: "6px",
-            fontSize: "14px",
+            color: "#475569",
+            marginTop: "2px",
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            margin: "2px 0 0 0",
           }}
         >
-          AI Investigation Platform
+          Investigation Intelligence
         </p>
-      </div>
+      </Link>
 
-      {/* OFFICER PROFILE */}
-
-      <div
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02))",
-          border: "1px solid rgba(255,255,255,.08)",
-          borderRadius: "24px",
-          padding: "18px",
-          marginBottom: "28px",
-        }}
-      >
-        <div
+      {/* PORTAL LINKS */}
+      <div style={{ marginBottom: "auto" }}>
+        <p
           style={{
-            width: "52px",
-            height: "52px",
-            borderRadius: "50%",
-            background:
-              "linear-gradient(135deg,#2563EB,#60A5FA)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "20px",
+            fontSize: "11px",
+            fontWeight: 700,
+            color: "#475569",
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            paddingLeft: "12px",
             marginBottom: "12px",
           }}
         >
-          👮
-        </div>
-
-        <h3
-          style={{
-            fontWeight: 700,
-          }}
-        >
-          Investigation Officer
-        </h3>
-
-        <p
-          style={{
-            color: "#94A3B8",
-            fontSize: "13px",
-            marginTop: "4px",
-          }}
-        >
-          Crime Investigation Unit
+          OFFICER PORTAL
         </p>
-      </div>
-
-      {/* MENU */}
-
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-        }}
-      >
-        {menuItems.map((item) => {
-          const active = pathname === item.href;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                padding: "16px 18px",
-                borderRadius: "18px",
-                textDecoration: "none",
-
-                background: active
-                  ? "linear-gradient(90deg,#2563EB,#60A5FA)"
-                  : "transparent",
-
-                color: active
-                  ? "#fff"
-                  : "#CBD5E1",
-
-                border: active
-                  ? "none"
-                  : "1px solid rgba(255,255,255,.04)",
-
-                transition: ".25s",
-                fontWeight: 600,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: "18px",
-                }}
-              >
-                {item.icon}
-              </span>
-
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* AI STATUS */}
-
-      <div
-        style={{
-          marginTop: "40px",
-          background:
-            "linear-gradient(180deg, rgba(37,99,235,.15), rgba(37,99,235,.05))",
-          border: "1px solid rgba(37,99,235,.25)",
-          borderRadius: "24px",
-          padding: "18px",
-        }}
-      >
-        <h3
-          style={{
-            color: "#60A5FA",
-            fontWeight: 700,
-            marginBottom: "12px",
-          }}
-        >
-          AI Systems
-        </h3>
-
-        <div
+        
+        <nav
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "10px",
-            color: "#CBD5E1",
-            fontSize: "14px",
+            gap: "4px",
           }}
         >
-          <span>🟢 NETRAI Online</span>
-          <span>🟢 SANKET Online</span>
-          <span>🟢 Evidence Engine Active</span>
-          <span>🟢 Investigation Ready</span>
+          {menuItems.map((item) => {
+            const active = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "12px 16px",
+                  borderRadius: "8px",
+                  textDecoration: "none",
+                  background: active ? "#1E3A8A" : "transparent",
+                  color: active ? "#FFFFFF" : "#94A3B8",
+                  transition: "all 0.15s ease",
+                  fontWeight: active ? 500 : 400,
+                  fontSize: "14px",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.color = "#FFFFFF";
+                    e.currentTarget.style.background = "rgba(255, 255, 255, 0.03)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.color = "#94A3B8";
+                    e.currentTarget.style.background = "transparent";
+                  }
+                }}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* SYSTEM STATUS FOOTER & LOGOUT ACTION */}
+      <div
+        style={{
+          borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+          paddingTop: "16px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              backgroundColor: "#22C55E",
+            }}
+          ></span>
+          <div>
+            <p style={{ margin: 0, color: "#FFFFFF", fontSize: "13px", fontWeight: 500 }}>
+              System Status
+            </p>
+            <p style={{ margin: "1px 0 0 0", color: "#64748B", fontSize: "11px" }}>
+              All systems operational
+            </p>
+          </div>
         </div>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            width: "100%",
+            textAlign: "left",
+            background: "transparent",
+            border: "none",
+            color: "#94A3B8",
+            fontSize: "13px",
+            fontWeight: 500,
+            padding: "8px 12px",
+            borderRadius: "6px",
+            cursor: "pointer",
+            transition: "all 0.15s ease-in-out",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#FF4D4D";
+            e.currentTarget.style.background = "rgba(239, 68, 68, 0.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#94A3B8";
+            e.currentTarget.style.background = "transparent";
+          }}
+        >
+          Logout Session
+        </button>
       </div>
     </aside>
   );

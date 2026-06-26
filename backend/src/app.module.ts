@@ -9,7 +9,7 @@ import { EvidenceModule } from './evidence/evidence.module';
 import { InterviewsModule } from './interviews/interviews.module';
 import { AuditModule } from './audit/audit.module';
 import { PrismaModule } from './prisma/prisma.module';
-
+import { OfficerProfileModule } from './officer-profile/officer-profile.module';
 import { AiModule } from './ai/ai.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { ReportsModule } from './reports/reports.module';
@@ -28,7 +28,7 @@ import { RecommendationsModule } from './recommendations/recommendations.module'
     InterviewsModule,
     AuditModule,
     PrismaModule,
-
+    OfficerProfileModule,
     AiModule,
     AnalyticsModule,
     ReportsModule,

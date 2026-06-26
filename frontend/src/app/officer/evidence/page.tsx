@@ -9,6 +9,8 @@ import FadeUp from "@/components/motion/FadeUp";
 export default function EvidencePage() {
   const [evidence, setEvidence] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"ALL" | "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT">("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     loadEvidence();
@@ -16,12 +18,8 @@ export default function EvidencePage() {
 
   async function loadEvidence() {
     try {
-      const res = await fetch(
-        "http://localhost:3001/evidence"
-      );
-
+      const res = await fetch("http://localhost:3001/evidence");
       const data = await res.json();
-
       setEvidence(data);
     } catch (error) {
       console.error(error);
@@ -32,25 +30,45 @@ export default function EvidencePage() {
 
   if (loading) {
     return (
-      <div className="text-white p-8">
-        Loading Evidence...
+      <div style={{ padding: "40px", color: "white", backgroundColor: "#060B13", minHeight: "100vh", fontFamily: "sans-serif" }}>
+        Loading Evidence Repository...
       </div>
     );
   }
 
+  // --- Live Dynamic Arrays Logic ---
   const totalEvidence = evidence.length;
+  const totalImages = evidence.filter((e) => e.type === "IMAGE").length;
+  const totalVideos = evidence.filter((e) => e.type === "VIDEO").length;
+  const totalAudio = evidence.filter((e) => e.type === "AUDIO").length;
+  const totalDocuments = evidence.filter((e) => e.type === "DOCUMENT").length;
 
-  const totalImages = evidence.filter(
-    (e) => e.type === "IMAGE"
-  ).length;
+  // Real-time processed vs pending metrics mapped dynamically off existence of data analysis structures
+  const processedCount = evidence.filter((e) => e.videoAnalysis || e.summary).length;
+  const processingCount = totalEvidence - processedCount;
 
-  const totalVideos = evidence.filter(
-    (e) => e.type === "VIDEO"
-  ).length;
+  // --- Filtering & Query Logic ---
+  const filteredEvidence = evidence.filter((item) => {
+    if (activeTab !== "ALL" && item.type !== activeTab) return false;
 
-  const totalAudio = evidence.filter(
-    (e) => e.type === "AUDIO"
-  ).length;
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const caseMatch = item.case?.title?.toLowerCase().includes(query);
+      const caseDescMatch = item.case?.description?.toLowerCase().includes(query);
+      const typeMatch = item.type?.toLowerCase().includes(query);
+      const fileMatch = item.fileUrl?.toLowerCase().includes(query);
+      return caseMatch || caseDescMatch || typeMatch || fileMatch;
+    }
+    return true;
+  });
+
+  const getTypeStyles = (type: string) => {
+    const t = type?.toUpperCase();
+    if (t === "VIDEO") return { color: "#A855F7", bg: "rgba(168, 85, 247, 0.12)" };
+    if (t === "AUDIO") return { color: "#EC4899", bg: "rgba(236, 72, 153, 0.12)" };
+    if (t === "IMAGE") return { color: "#38BDF8", bg: "rgba(56, 189, 248, 0.12)" };
+    return { color: "#22C55E", bg: "rgba(34, 197, 94, 0.12)" };
+  };
 
   return (
     <div
@@ -58,432 +76,233 @@ export default function EvidencePage() {
         display: "flex",
         flexDirection: "column",
         gap: "24px",
+        backgroundColor: "#060B13",
+        color: "#F8FAFC",
+        padding: "32px",
+        minHeight: "100vh",
+        fontFamily: "sans-serif",
       }}
     >
+      {/* HEADER TITLE */}
       <FadeUp>
         <SectionTitle
-          title="Evidence Intelligence Center"
-          subtitle="All investigation evidence collected across the NAYANK platform."
+          title="Evidence Management"
+          subtitle="Upload, manage and analyze case evidence"
         />
       </FadeUp>
 
-      {/* ANALYTICS */}
-
+      {/* TOP METRIC TELEMETRY OVERVIEW PANELS */}
       <FadeUp>
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(250px,1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
             gap: "20px",
           }}
         >
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>
-              Total Evidence
-            </p>
-
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                marginTop: "10px",
-              }}
-            >
-              {totalEvidence}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "8px", height: "32px", background: "#2563EB", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Total Evidence</p>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 700, margin: "4px 0 0 0" }}>{totalEvidence}</h2>
+              <p style={{ color: "#64748B", fontSize: "11px", margin: "2px 0 0 0" }}>Files uploaded</p>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>
-              Images
-            </p>
-
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#38BDF8",
-                marginTop: "10px",
-              }}
-            >
-              {totalImages}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "8px", height: "32px", background: "#22C55E", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Processed</p>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 700, margin: "4px 0 0 0", color: "#22C55E" }}>{processedCount}</h2>
+              <p style={{ color: "#64748B", fontSize: "11px", margin: "2px 0 0 0" }}>Evidence processed</p>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>
-              Videos
-            </p>
-
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#4ADE80",
-                marginTop: "10px",
-              }}
-            >
-              {totalVideos}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "8px", height: "32px", background: "#F59E0B", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Processing</p>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 700, margin: "4px 0 0 0", color: "#F59E0B" }}>{processingCount}</h2>
+              <p style={{ color: "#64748B", fontSize: "11px", margin: "2px 0 0 0" }}>In progress</p>
+            </div>
           </PremiumCard>
 
-          <PremiumCard>
-            <p style={{ color: "#94A3B8" }}>
-              Audio Files
-            </p>
-
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                color: "#A855F7",
-                marginTop: "10px",
-              }}
-            >
-              {totalAudio}
-            </h2>
+          <PremiumCard style={{ display: "flex", alignItems: "center", gap: "16px", background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+            <div style={{ width: "8px", height: "32px", background: "#6366F1", borderRadius: "4px" }}></div>
+            <div>
+              <p style={{ color: "#94A3B8", fontSize: "12px", margin: 0, fontWeight: 500 }}>Archived</p>
+              <h2 style={{ fontSize: "1.75rem", fontWeight: 700, margin: "4px 0 0 0", color: "#6366F1" }}>0</h2>
+              <p style={{ color: "#64748B", fontSize: "11px", margin: "2px 0 0 0" }}>Evidence archived</p>
+            </div>
           </PremiumCard>
         </div>
       </FadeUp>
 
-      {/* EVIDENCE LIST */}
-
-      {evidence.map((item) => (
-        <FadeUp key={item.id}>
-          <PremiumCard>
-
-            {/* HEADER */}
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems: "start",
-                gap: "20px",
-                flexWrap: "wrap",
-              }}
+      {/* FILTER CONTROLS SEGMENT BAR */}
+      <FadeUp>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px", borderBottom: "1px solid rgba(255, 255, 255, 0.08)", paddingBottom: "4px" }}>
+          <div style={{ display: "flex", gap: "24px" }}>
+            <span
+              onClick={() => setActiveTab("ALL")}
+              style={{ fontSize: "14px", fontWeight: activeTab === "ALL" ? 600 : 400, color: activeTab === "ALL" ? "#38BDF8" : "#64748B", borderBottom: activeTab === "ALL" ? "2px solid #38BDF8" : "none", paddingBottom: "14px", cursor: "pointer" }}
             >
-              <div>
-                <h2
-                  style={{
-                    fontSize: "1.6rem",
-                    fontWeight: 700,
-                  }}
-                >
-                  {item.case?.title}
-                </h2>
-
-                <p
-                  style={{
-                    color: "#94A3B8",
-                    marginTop: "10px",
-                  }}
-                >
-                  {item.case?.description}
-                </p>
-              </div>
-
-              <div
-                style={{
-                  padding:
-                    "10px 16px",
-                  borderRadius:
-                    "14px",
-                  background:
-                    item.type ===
-                    "IMAGE"
-                      ? "rgba(56,189,248,.15)"
-                      : item.type ===
-                        "VIDEO"
-                      ? "rgba(74,222,128,.15)"
-                      : "rgba(168,85,247,.15)",
-                  color:
-                    item.type ===
-                    "IMAGE"
-                      ? "#38BDF8"
-                      : item.type ===
-                        "VIDEO"
-                      ? "#4ADE80"
-                      : "#A855F7",
-                  fontWeight:
-                    600,
-                }}
-              >
-                {item.type}
-              </div>
-            </div>
-
-            {/* PREVIEW */}
-
-            <div
-              style={{
-                marginTop: "24px",
-              }}
+              All Evidence
+            </span>
+            <span
+              onClick={() => setActiveTab("IMAGE")}
+              style={{ fontSize: "14px", fontWeight: activeTab === "IMAGE" ? 600 : 400, color: activeTab === "IMAGE" ? "#38BDF8" : "#64748B", borderBottom: activeTab === "IMAGE" ? "2px solid #38BDF8" : "none", paddingBottom: "14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
             >
-              {item.type ===
-                "IMAGE" && (
-                <img
-                  src={
-                    item.fileUrl
-                  }
-                  alt=""
-                  style={{
-                    width:
-                      "100%",
-                    borderRadius:
-                      "20px",
-                    maxHeight:
-                      "500px",
-                    objectFit:
-                      "cover",
-                  }}
-                />
-              )}
-
-              {item.type ===
-                "VIDEO" && (
-                <video
-                  controls
-                  style={{
-                    width:
-                      "100%",
-                    borderRadius:
-                      "20px",
-                  }}
-                >
-                  <source
-                    src={
-                      item.fileUrl
-                    }
-                  />
-                </video>
-              )}
-
-              {item.type ===
-                "AUDIO" && (
-                <audio
-                  controls
-                  style={{
-                    width:
-                      "100%",
-                  }}
-                >
-                  <source
-                    src={
-                      item.fileUrl
-                    }
-                  />
-                </audio>
-              )}
-            </div>
-
-            {/* DETAILS */}
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns:
-                  "repeat(auto-fit,minmax(220px,1fr))",
-                gap: "20px",
-                marginTop: "24px",
-              }}
+              Images <span style={{ background: "rgba(100, 116, 139, 0.15)", color: "#94A3B8", fontSize: "11px", padding: "2px 6px", borderRadius: "10px" }}>{totalImages}</span>
+            </span>
+            <span
+              onClick={() => setActiveTab("VIDEO")}
+              style={{ fontSize: "14px", fontWeight: activeTab === "VIDEO" ? 600 : 400, color: activeTab === "VIDEO" ? "#38BDF8" : "#64748B", borderBottom: activeTab === "VIDEO" ? "2px solid #38BDF8" : "none", paddingBottom: "14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
             >
-              <PremiumCard>
-                <p
-                  style={{
-                    color:
-                      "#94A3B8",
-                  }}
-                >
-                  Case Status
-                </p>
+              Videos <span style={{ background: "rgba(100, 116, 139, 0.15)", color: "#94A3B8", fontSize: "11px", padding: "2px 6px", borderRadius: "10px" }}>{totalVideos}</span>
+            </span>
+            <span
+              onClick={() => setActiveTab("AUDIO")}
+              style={{ fontSize: "14px", fontWeight: activeTab === "AUDIO" ? 600 : 400, color: activeTab === "AUDIO" ? "#38BDF8" : "#64748B", borderBottom: activeTab === "AUDIO" ? "2px solid #38BDF8" : "none", paddingBottom: "14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              Audio <span style={{ background: "rgba(100, 116, 139, 0.15)", color: "#94A3B8", fontSize: "11px", padding: "2px 6px", borderRadius: "10px" }}>{totalAudio}</span>
+            </span>
+            <span
+              onClick={() => setActiveTab("DOCUMENT")}
+              style={{ fontSize: "14px", fontWeight: activeTab === "DOCUMENT" ? 600 : 400, color: activeTab === "DOCUMENT" ? "#38BDF8" : "#64748B", borderBottom: activeTab === "DOCUMENT" ? "2px solid #38BDF8" : "none", paddingBottom: "14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}
+            >
+              Documents <span style={{ background: "rgba(100, 116, 139, 0.15)", color: "#94A3B8", fontSize: "11px", padding: "2px 6px", borderRadius: "10px" }}>{totalDocuments}</span>
+            </span>
+          </div>
 
-                <h3
-                  style={{
-                    marginTop:
-                      "10px",
-                  }}
-                >
-                  {
-                    item.case
-                      ?.status
-                  }
-                </h3>
-              </PremiumCard>
+          <div style={{ display: "flex", gap: "12px", alignItems: "center", marginBottom: "8px" }}>
+            <input
+              type="text"
+              placeholder="Search evidence..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "8px", color: "white", padding: "8px 16px", fontSize: "13px", width: "220px", outline: "none" }}
+            />
+            <button style={{ background: "#0B1320", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: "8px", color: "#94A3B8", padding: "8px 16px", fontSize: "13px", cursor: "pointer" }}>
+              Filter
+            </button>
+          </div>
+        </div>
+      </FadeUp>
 
-              <PremiumCard>
-                <p
-                  style={{
-                    color:
-                      "#94A3B8",
-                  }}
-                >
-                  Uploaded On
-                </p>
+      {/* GRID CONTAINER FOR INVENTORY LISTINGS */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+        
+        {/* Row Header Metrics */}
+        <div style={{ display: "grid", gridTemplateColumns: "3fr 3fr 1.5fr 1.2fr 1fr 1.5fr", padding: "0 24px", fontSize: "11px", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span>Evidence Details</span>
+          <span>Case Details</span>
+          <span>Uploaded On</span>
+          <span>Type</span>
+          <span>Status</span>
+          <span style={{ textAlign: "right" }}>Actions</span>
+        </div>
 
-                <h3
-                  style={{
-                    marginTop:
-                      "10px",
-                  }}
-                >
-                  {new Date(
-                    item.createdAt
-                  ).toLocaleDateString()}
-                </h3>
-              </PremiumCard>
+        {/* Dynamic Items Row Grid Mapping */}
+        {filteredEvidence.length > 0 ? (
+          filteredEvidence.map((item) => {
+            const typeStyles = getTypeStyles(item.type);
+            const isProcessed = !!(item.videoAnalysis || item.summary);
 
-              <PremiumCard>
-                <p
-                  style={{
-                    color:
-                      "#94A3B8",
-                  }}
-                >
-                  Evidence Type
-                </p>
-
-                <h3
-                  style={{
-                    marginTop:
-                      "10px",
-                  }}
-                >
-                  {item.type}
-                </h3>
-              </PremiumCard>
-            </div>
-
-            {/* NETRAI */}
-
-            {item.videoAnalysis && (
-              <div
-                style={{
-                  marginTop:
-                    "24px",
-                }}
-              >
-                <PremiumCard>
-                  <h3
-                    style={{
-                      color:
-                        "#38BDF8",
-                      marginBottom:
-                        "15px",
-                    }}
-                  >
-                    NETRAI Analysis
-                  </h3>
-
-                  <div
-                    style={{
-                      display:
-                        "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fit,minmax(220px,1fr))",
-                      gap: "20px",
-                    }}
-                  >
-                    <div>
-                      <p>
-                        Persons
+            return (
+              <FadeUp key={item.id}>
+                <PremiumCard style={{ padding: "16px 24px", background: "#090F1B", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "3fr 3fr 1.5fr 1.2fr 1fr 1.5fr", alignItems: "center" }}>
+                    
+                    {/* Column 1: Evidence File Info */}
+                    <div style={{ paddingRight: "16px" }}>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: 600, color: "#FFFFFF", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.type || "DATA"}_Asset_Ref_{item.id}.{item.type === "VIDEO" ? "mp4" : item.type === "AUDIO" ? "m4a" : "dat"}
                       </p>
-                      <h2>
-                        {
-                          item
-                            .videoAnalysis
-                            ?.persons
-                        }
-                      </h2>
+                      <p style={{ margin: "4px 0 0 0", color: "#64748B", fontSize: "12px", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {item.case?.description || "No file description details found."}
+                      </p>
                     </div>
 
-                    <div>
-                      <p>
-                        Vehicles
+                    {/* Column 2: Parent Case Link Details */}
+                    <div style={{ paddingRight: "16px" }}>
+                      <p style={{ margin: 0, fontSize: "13px", fontWeight: 600, color: "#38BDF8" }}>
+                        CASE-REF-0{item.case?.id || item.id}
                       </p>
-                      <h2>
-                        {
-                          item
-                            .videoAnalysis
-                            ?.vehicles
-                        }
-                      </h2>
+                      <p style={{ margin: "2px 0 0 0", color: "#94A3B8", fontSize: "12px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.case?.title || "Detached Case Context"}
+                      </p>
                     </div>
 
-                    <div>
-                      <p>
-                        Plates
+                    {/* Column 3: Upload Time */}
+                    <div style={{ color: "#94A3B8", fontSize: "13px" }}>
+                      <p style={{ margin: 0, fontWeight: 500 }}>
+                        {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "Recent"}
                       </p>
-                      <h2>
-                        {
-                          item
-                            .videoAnalysis
-                            ?.plates
-                        }
-                      </h2>
+                      <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "#64748B" }}>
+                        {item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "10:30 AM"}
+                      </p>
                     </div>
-                  </div>
 
-                  <p
-                    style={{
-                      marginTop:
-                        "16px",
-                      color:
-                        "#CBD5E1",
-                    }}
-                  >
-                    {
-                      item
-                        .videoAnalysis
-                        ?.summary
-                    }
-                  </p>
-                </PremiumCard>
-              </div>
-            )}
+                    {/* Column 4: Category Data Badge Tag */}
+                    <div>
+                      <span style={{ fontSize: "11px", fontWeight: 600, color: typeStyles.color, background: typeStyles.bg, padding: "4px 10px", borderRadius: "6px", textTransform: "capitalize" }}>
+                        {item.type || "File"}
+                      </span>
+                    </div>
 
-            {/* SANKET */}
+                    {/* Column 5: Pipeline Core Status State */}
+                    <div>
+                      <span style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        color: isProcessed ? "#22C55E" : "#F59E0B",
+                        background: isProcessed ? "rgba(34, 197, 94, 0.08)" : "rgba(245, 158, 11, 0.08)",
+                        padding: "4px 10px",
+                        borderRadius: "6px"
+                      }}>
+                        {isProcessed ? "Processed" : "Processing"}
+                      </span>
+                    </div>
 
-            {item.summary && (
-              <div
-                style={{
-                  marginTop:
-                    "24px",
-                }}
-              >
-                <PremiumCard>
-                  <h3
-                    style={{
-                      color:
-                        "#A855F7",
-                      marginBottom:
-                        "15px",
-                    }}
-                  >
-                    SANKET Report
-                  </h3>
+                    {/* Column 6: Action Targets Links */}
+                    <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                      {item.fileUrl && (
+                        <a href={item.fileUrl} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
+                          <button style={{ border: "1px solid rgba(255,255,255,0.08)", padding: "6px 12px", borderRadius: "6px", background: "transparent", color: "#94A3B8", fontSize: "12px", cursor: "pointer", transition: "all 0.15s" }}>
+                            View Asset
+                          </button>
+                        </a>
+                      )}
+                    </div>
 
-                  <div
-                    style={{
-                      maxHeight:
-                        "350px",
-                      overflowY:
-                        "auto",
-                      color:
-                        "#CBD5E1",
-                      lineHeight:
-                        1.8,
-                      whiteSpace:
-                        "pre-wrap",
-                    }}
-                  >
-                    {item.summary}
                   </div>
                 </PremiumCard>
-              </div>
-            )}
+              </FadeUp>
+            );
+          })
+        ) : (
+          <div style={{ padding: "48px", textAlign: "center", color: "#64748B", background: "#090F1B", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.02)" }}>
+            No loaded evidence files match the filter settings.
+          </div>
+        )}
+      </div>
 
-          </PremiumCard>
-        </FadeUp>
-      ))}
+      {/* ADVISORY FOOTER */}
+      <FadeUp>
+        <div
+          style={{
+            marginTop: "12px",
+            padding: "14px 20px",
+            background: "rgba(56, 189, 248, 0.02)",
+            border: "1px solid rgba(56, 189, 248, 0.12)",
+            borderRadius: "12px",
+            fontSize: "12px",
+            color: "#94A3B8",
+          }}
+        >
+          Securely store and manage all types of digital evidence. All active database entries are fully synchronized and tracked inside the core intelligence infrastructure log.
+        </div>
+      </FadeUp>
     </div>
   );
 }

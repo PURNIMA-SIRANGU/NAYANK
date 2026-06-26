@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -9,10 +10,18 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // ✅ Enable DTO Validation
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   await app.listen(3001);
 
-  console.log(
-    '🚀 Backend Running: http://localhost:3001',
-  );
+  console.log('🚀 Backend Running: http://localhost:3001');
 }
+
 bootstrap();

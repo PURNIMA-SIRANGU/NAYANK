@@ -17,6 +17,7 @@ model User {
   audits         AuditLog[]
   cases          Case[]
   citizenProfile CitizenProfile?
+  officerProfile OfficerProfile?
 }
 
 model CitizenProfile {
@@ -121,6 +122,39 @@ model EmailOtp {
   createdAt DateTime @default(now())
   attempts  Int      @default(0)
   isUsed    Boolean  @default(false)
+}
+
+model OfficerProfile {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  firstName         String?
+  lastName          String?
+  gender            String?
+  dob               DateTime?
+  phone             String?
+  alternatePhone    String?
+  email             String?
+  address           String?
+  city              String?
+  district          String?
+  state             String?
+  pincode           String?
+  officerId         String?
+  badgeNumber       String?
+  rank              String?
+  designation       String?
+  department        String?
+  station           String?
+  bloodGroup        String?
+  aadhaar           String?
+  pan               String?
+  photo             String?
+  emergencyName     String?
+  emergencyRelation String?
+  emergencyPhone    String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  user              User      @relation(fields: [userId], references: [id])
 }
 
 enum Role {
