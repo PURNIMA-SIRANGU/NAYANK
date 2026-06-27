@@ -21,9 +21,9 @@ export default function AdminDashboard() {
     try {
       const [usersRes, casesRes, evidenceRes] =
         await Promise.all([
-          fetch("http://localhost:3001/users"),
-          fetch("http://localhost:3001/cases"),
-          fetch("http://localhost:3001/evidence"),
+          fetch("https://nayank-backend.onrender.com/users"),
+          fetch("https://nayank-backend.onrender.com/cases"),
+          fetch("https://nayank-backend.onrender.com/evidence"),
         ]);
 
       const usersData = await usersRes.json();

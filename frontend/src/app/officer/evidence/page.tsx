@@ -18,7 +18,7 @@ export default function EvidencePage() {
 
   async function loadEvidence() {
     try {
-      const res = await fetch("http://localhost:3001/evidence");
+      const res = await fetch("https://nayank-backend.onrender.com/evidence");
       const data = await res.json();
       setEvidence(data);
     } catch (error) {

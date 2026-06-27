@@ -17,7 +17,7 @@ export default function MonitoringPage() {
   async function loadMonitoring() {
     try {
       const res = await fetch(
-        "http://localhost:3001/evidence"
+        "https://nayank-backend.onrender.com/evidence"
       );
 
       const data = await res.json();

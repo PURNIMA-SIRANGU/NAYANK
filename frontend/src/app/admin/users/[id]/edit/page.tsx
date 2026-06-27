@@ -27,7 +27,7 @@ export default function EditUserPage() {
 
   async function loadUser() {
     const res = await fetch(
-      `http://localhost:3001/users/${id}`
+      `https://nayank-backend.onrender.com/users/${id}`
     );
 
     const user = await res.json();
@@ -48,7 +48,7 @@ export default function EditUserPage() {
       setLoading(true);
 
       await fetch(
-        `http://localhost:3001/users/${id}`,
+        `https://nayank-backend.onrender.com/users/${id}`,
         {
           method: "PATCH",
           headers: {

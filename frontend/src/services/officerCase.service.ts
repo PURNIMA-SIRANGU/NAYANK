@@ -1,6 +1,6 @@
 export async function getAllCases() {
   const response = await fetch(
-    "http://localhost:3001/cases"
+    "https://nayank-backend.onrender.com/cases"
   );
 
   if (!response.ok) {

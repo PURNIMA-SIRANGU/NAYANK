@@ -20,9 +20,9 @@ export default function SupervisorDashboard() {
     try {
       const [casesRes, evidenceRes, usersRes] =
         await Promise.all([
-          fetch("http://localhost:3001/cases"),
-          fetch("http://localhost:3001/evidence"),
-          fetch("http://localhost:3001/users"),
+          fetch("https://nayank-backend.onrender.com/cases"),
+          fetch("https://nayank-backend.onrender.com/evidence"),
+          fetch("https://nayank-backend.onrender.com/users"),
         ]);
 
       const casesData = await casesRes.json();

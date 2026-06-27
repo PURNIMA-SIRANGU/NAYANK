@@ -21,7 +21,7 @@ export default function OfficersPage() {
   async function loadOfficers() {
     try {
       const res = await fetch(
-        "http://localhost:3001/users"
+        "https://nayank-backend.onrender.com/users"
       );
 
       const data = await res.json();

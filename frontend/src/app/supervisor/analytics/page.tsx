@@ -19,8 +19,8 @@ export default function AnalyticsPage() {
     try {
       const [casesRes, evidenceRes] =
         await Promise.all([
-          fetch("http://localhost:3001/cases"),
-          fetch("http://localhost:3001/evidence"),
+          fetch("https://nayank-backend.onrender.com/cases"),
+          fetch("https://nayank-backend.onrender.com/evidence"),
         ]);
 
       const casesData =

@@ -22,7 +22,7 @@ export default function UserDetailsPage() {
   async function loadUser() {
     try {
       const res = await fetch(
-        `http://localhost:3001/users/${id}`
+        `https://nayank-backend.onrender.com/users/${id}`
       );
 
       const data = await res.json();

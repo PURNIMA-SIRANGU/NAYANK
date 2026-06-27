@@ -19,7 +19,7 @@ export default function CasesPage() {
 
   async function loadCases() {
     try {
-      const res = await fetch("http://localhost:3001/cases");
+      const res = await fetch("https://nayank-backend.onrender.com/cases");
       const data = await res.json();
       setCases(data);
     } catch (error) {

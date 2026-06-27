@@ -19,7 +19,7 @@ export default function UsersPage() {
 
   async function loadUsers() {
     try {
-      const res = await fetch("http://localhost:3001/users");
+      const res = await fetch("https://nayank-backend.onrender.com/users");
       const data = await res.json();
       setUsers(data);
     } catch (error) {
@@ -31,7 +31,7 @@ export default function UsersPage() {
 
   async function disableUser(id: string) {
     try {
-      await fetch(`http://localhost:3001/users/${id}`, {
+      await fetch(`https://nayank-backend.onrender.com/users/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

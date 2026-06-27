@@ -17,7 +17,7 @@ export default function InterviewsPage() {
   async function loadInterviews() {
     try {
       const res = await fetch(
-        "http://localhost:3001/interviews"
+        "https://nayank-backend.onrender.com/interviews"
       );
 
       const data = await res.json();

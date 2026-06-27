@@ -17,7 +17,7 @@ export default function ReportsPage() {
 
   async function loadReports() {
     try {
-      const res = await fetch("http://localhost:3001/cases");
+      const res = await fetch("https://nayank-backend.onrender.com/cases");
       const data = await res.json();
       setCases(data);
     } catch (error) {
@@ -223,7 +223,7 @@ export default function ReportsPage() {
                     {/* Action Download Controllers Area */}
                     <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", flexWrap: "wrap" }}>
                       <button
-                        onClick={() => window.open(`http://localhost:3001/cases/${item.id}/report/pdf`, "_blank")}
+                        onClick={() => window.open(`https://nayank-backend.onrender.com/cases/${item.id}/report/pdf`, "_blank")}
                         style={{ border: "none", padding: "8px 12px", borderRadius: "6px", background: "#2563EB", color: "white", fontWeight: 600, fontSize: "11px", cursor: "pointer", transition: "background 0.2s" }}
                       >
                         PDF Report
@@ -231,7 +231,7 @@ export default function ReportsPage() {
 
                       {netraiReports.length > 0 && (
                         <button
-                          onClick={() => window.open(`http://localhost:3001/reports/${item.id}/video`, "_blank")}
+                          onClick={() => window.open(`https://nayank-backend.onrender.com/reports/${item.id}/video`, "_blank")}
                           style={{ border: "none", padding: "8px 12px", borderRadius: "6px", background: "#0EA5E9", color: "white", fontWeight: 600, fontSize: "11px", cursor: "pointer", transition: "background 0.2s" }}
                         >
                           Video Download
@@ -239,7 +239,7 @@ export default function ReportsPage() {
                       )}
 
                       <button
-                        onClick={() => window.open(`http://localhost:3001/cases/${item.id}/report`, "_blank")}
+                        onClick={() => window.open(`https://nayank-backend.onrender.com/cases/${item.id}/report`, "_blank")}
                         style={{ border: "1px solid rgba(255,255,255,0.1)", padding: "7px 12px", borderRadius: "6px", background: "transparent", color: "#94A3B8", fontWeight: 500, fontSize: "11px", cursor: "pointer", transition: "all 0.2s" }}
                       >
                         Intelligence Log

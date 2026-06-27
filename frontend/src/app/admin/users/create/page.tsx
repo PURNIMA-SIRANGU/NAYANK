@@ -28,7 +28,7 @@ export default function CreateUserPage() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:3001/users",
+        "https://nayank-backend.onrender.com/users",
         {
           method: "POST",
           headers: {

@@ -18,8 +18,8 @@ export default function OfficersPage() {
   async function loadData() {
     try {
       const [usersRes, casesRes] = await Promise.all([
-        fetch("http://localhost:3001/users"),
-        fetch("http://localhost:3001/cases"),
+        fetch("https://nayank-backend.onrender.com/users"),
+        fetch("https://nayank-backend.onrender.com/cases"),
       ]);
 
       const users = await usersRes.json();

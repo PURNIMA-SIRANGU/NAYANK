@@ -18,7 +18,7 @@ export default function ReportsPage() {
   async function loadCases() {
     try {
       const res = await fetch(
-        "http://localhost:3001/cases"
+        "https://nayank-backend.onrender.com/cases"
       );
 
       const data = await res.json();

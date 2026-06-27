@@ -18,7 +18,7 @@ export default function AuditPage() {
   async function loadLogs() {
     try {
       const res = await fetch(
-        "http://localhost:3001/audit"
+        "https://nayank-backend.onrender.com/audit"
       );
 
       const data = await res.json();
