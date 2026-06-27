@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
+import api from "@/lib/axios";
 import PremiumCard from "@/components/ui/PremiumCard";
 import SectionTitle from "@/components/ui/SectionTitle";
 import FadeUp from "@/components/motion/FadeUp";
@@ -53,24 +53,21 @@ export default function OfficerDashboard() {
     return () => clearInterval(clockInterval);
   }, []);
 
-  async function loadDashboard() {
-    try {
-      const [casesRes, evidenceRes] = await Promise.all([
-        fetch("http://localhost:3001/cases"),
-        fetch("http://localhost:3001/evidence"),
-      ]);
+async function loadDashboard() {
+  try {
+    const [casesRes, evidenceRes] = await Promise.all([
+      api.get("/cases"),
+      api.get("/evidence"),
+    ]);
 
-      const casesData = await casesRes.json();
-      const evidenceData = await evidenceRes.json();
-
-      setCases(casesData);
-      setEvidence(evidenceData);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    setCases(casesRes.data);
+    setEvidence(evidenceRes.data);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
   }
+}
 
   // --- Dynamic Metrics Engine ---
   const totalCases = cases.length;
