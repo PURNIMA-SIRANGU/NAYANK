@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./nayank-logo.png" width="220"/>
+  <img src="./nayank-logo.png" width="920"/>
 </p>
 
 <h1 align="center">NAYANK</h1>
